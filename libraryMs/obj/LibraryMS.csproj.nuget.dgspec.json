@@ -50,6 +50,36 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "Figgle.Fonts": {
+              "target": "Package",
+              "version": "[0.6.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
+            "Sharprompt": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Spectre.Console": {
+              "target": "Package",
+              "version": "[0.51.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
