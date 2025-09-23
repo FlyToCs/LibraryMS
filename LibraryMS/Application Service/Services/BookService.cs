@@ -1,6 +1,8 @@
-﻿namespace LibraryMS.Application_Service.Services;
+﻿using LibraryMS.Domain.Contracts.Service_Contracts;
 
-public class BookService
+namespace LibraryMS.Application_Service.Services;
+
+public class BookService: IBookService
 {
     
 }

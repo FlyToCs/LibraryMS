@@ -12,5 +12,6 @@ public class User
     public string Password { get; set; }
     public UserRoleEnum UserRole { get; set; }
     public bool IsActive { get; set; }
+    public List<BorrowedBook> BorrowedBooks { get; set; }
 
 }

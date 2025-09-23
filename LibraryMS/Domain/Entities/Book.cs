@@ -6,7 +6,12 @@ public class Book
     public string Title { get; set; }
     public string Description { get; set; }
     public string Author { get; set; }
+    public bool IsBorrow { get; set; }
+
     public BookCategory BookCategory { get; set; }
     public int BookCategoryId { get; set; }
-    public bool IsBorrow { get; set; }
+
+    public List<BorrowedBook> BorrowedBooks { get; set; }
+
+
 }
