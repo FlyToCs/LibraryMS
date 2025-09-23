@@ -1,11 +1,17 @@
 ﻿using Figgle.Fonts;
+using LibraryMS.Application_Service.Services;
+using LibraryMS.Domain.Contracts.Service_Contracts;
+using LibraryMS.Domain.Enums;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Sharprompt;
 using Spectre.Console;
-
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-Console.WriteLine("نسخه اول رستوران".Reverse().ToArray());
+
+
+IAuthenticationService authentication = new AuthenticationService();
+
+Console.WriteLine("نسخه 2.5.6 کتابخانه پشمک حاج عبدالاه".Reverse().ToArray());
 
 await AnsiConsole.Progress()
     .Columns(new ProgressColumn[]
@@ -36,6 +42,13 @@ Console.ReadKey();
 
 AuthenticationMenu();
 
+
+
+
+
+
+
+
 void AuthenticationMenu()
 {
     while (true)
@@ -53,33 +66,68 @@ void AuthenticationMenu()
         });
         Console.WriteLine("------------------");
 
-
-
-        switch (select)
+        try
         {
-            case "1. Login":
-                Console.Write("\nUsername: ");
-                string email = Console.ReadLine()!;
+            switch (select)
+            {
+                case "1. Login":
+                    Console.Write("\nUsername: ");
+                    string userName = Console.ReadLine()!;
 
-                Console.Write("Password: ");
-                string password = Console.ReadLine()!;
+                    Console.Write("Password: ");
+                    string password = Console.ReadLine()!;
+                    authentication.Login(userName, password);
+                    Console.ReadKey();
 
-                break;
+                    break;
 
-            case "2. Register":
-                Console.Write("\nUsername: ");
-                string newEmail = Console.ReadLine()!;
+                case "2. Register":
 
-                Console.Write("Password: ");
-                string newPassword = Console.ReadLine()!;
+                    Console.Write("\nFirst Name: ");
+                    string newFirstName = Console.ReadLine()!;
+
+                    Console.Write("Last Name: ");
+                    string newLastName = Console.ReadLine()!;
+
+                    Console.Write("Username: ");
+                    string newUsername = Console.ReadLine()!;
+
+                    Console.Write("Password: ");
+                    string newPassword = Console.ReadLine()!;
+
+                    Console.Write("Email: ");
+                    string newEmail = Console.ReadLine()!;
+
+                    var roll = Prompt.Select("Select your roll", new[]
+                    {
+                        "Member",
+                        "Admin"
+                    });
+                    UserRoleEnum newRoll;
+                    if (roll == "Member")
+                        newRoll = UserRoleEnum.Member;
+                    else
+                        newRoll = UserRoleEnum.Admin;
 
 
-                break;
+                    authentication.Register(newFirstName, newLastName, newUsername, newPassword, newEmail, newRoll);
+                    Console.WriteLine("registration successfully");
+    
+                    Console.ReadKey();
+                    break;
 
-            case "3. Exit":
-                Environment.Exit(-1);
-                break;
+                case "3. Exit":
+                    Environment.Exit(-1);
+                    break;
+            }
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.ReadKey();
+        }
+
+
     }
 }
 
