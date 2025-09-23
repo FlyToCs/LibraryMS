@@ -1,6 +1,6 @@
 ﻿namespace LibraryMS.Domain.Entities;
 
-public class Member
+public class MemberProfile : User
 {
     public DateTime RegistrationDate { get; set; }
     public List<BorrowedBook> BorrowedBooks { get; set; }

@@ -10,7 +10,7 @@ public class BorrowedBook
 
 
     public int MemberId { get; set; }
-    public Member Member { get; set; }
+    public MemberProfile Member { get; set; }
 
 
     public DateTime BorrowDate { get; set; }
