@@ -2,6 +2,7 @@
 using LibraryMS.Application_Service.Services;
 using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Contracts.Service_Contracts;
+using LibraryMS.Domain.Entities;
 using LibraryMS.Domain.Enums;
 using LibraryMS.Infrastructure.Repositories;
 using Microsoft.Identity.Client.Extensions.Msal;
@@ -12,36 +13,41 @@ Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 
 IAuthenticationService authentication = new AuthenticationService();
+IBookService bookService = new BookService();
+IUserService userService = new UserService();
 
-Console.WriteLine("نسخه 2.5.6 کتابخانه پشمک حاج عبدالاه".Reverse().ToArray());
 
-await AnsiConsole.Progress()
-    .Columns(new ProgressColumn[]
-    {
-        new TaskDescriptionColumn(),
-        new ProgressBarColumn(),
-        new PercentageColumn(),
-        new SpinnerColumn()
-    })
-    .StartAsync(async ctx =>
-    {
-        var dbTask = ctx.AddTask("[red]Connecting to database[/]");
-        var appTask = ctx.AddTask("[yellow]Loading application[/]");
-        var uiTask = ctx.AddTask("[green]Building UI[/]");
 
-        while (!ctx.IsFinished)
-        {
-            await Task.Delay(150);
 
-            dbTask.Increment(2.5);
-            appTask.Increment(2);
-            uiTask.Increment(3.0);
-        }
-    });
+// Console.WriteLine("نسخه 2.5.6 کتابخانه پشمک حاج عبدالاه".Reverse().ToArray());
+//
+// await AnsiConsole.Progress()
+//     .Columns(new ProgressColumn[]
+//     {
+//         new TaskDescriptionColumn(),
+//         new ProgressBarColumn(),
+//         new PercentageColumn(),
+//         new SpinnerColumn()
+//     })
+//     .StartAsync(async ctx =>
+//     {
+//         var dbTask = ctx.AddTask("[red]Connecting to database[/]");
+//         var appTask = ctx.AddTask("[yellow]Loading application[/]");
+//         var uiTask = ctx.AddTask("[green]Building UI[/]");
+//
+//         while (!ctx.IsFinished)
+//         {
+//             await Task.Delay(150);
+//
+//             dbTask.Increment(2.5);
+//             appTask.Increment(2);
+//             uiTask.Increment(3.0);
+//         }
+//     });
 
 AnsiConsole.MarkupLine("[bold cyan]✔ Application started successfully![/]");
 Console.ReadKey();
-
+User currentUser = null!;
 AuthenticationMenu();
 
 
@@ -78,7 +84,15 @@ void AuthenticationMenu()
 
                     Console.Write("Password: ");
                     string password = Console.ReadLine()!;
-                    authentication.Login(userName, password);
+                    currentUser = authentication.Login(userName, password);
+
+
+                    if (currentUser != null && currentUser.UserRole == UserRoleEnum.Member)
+                        MemberMenu();
+
+                    else
+                        AdminMenu();
+
                     Console.ReadKey();
 
                     break;
@@ -109,6 +123,8 @@ void AuthenticationMenu()
 
 
                     authentication.Register(newFirstName, newLastName, newUsername, newPassword, newEmail, newRoll);
+
+                    
                     Console.WriteLine("registration successfully");
     
                     Console.ReadKey();
@@ -129,10 +145,108 @@ void AuthenticationMenu()
 
 void MemberMenu()
 {
+    while (true)
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(FiggleFonts.Standard.Render("Member Panel"));
+        Console.ResetColor();
 
+        var select = Prompt.Select("Select an option", new[]
+        {
+            "1. Show all books",
+            "2. Show books based on categories",
+            "3. Borrow a book",
+            "4. Show my borrowed books",
+            "5. Logout"
+        });
+
+
+
+        try
+        {
+            switch (select)
+            {
+                case "1. Show all books":
+                    
+                    break;
+
+                case "2. Show books based on categories":
+                    break;
+
+                case "3. Borrow a book":
+                    break;
+
+                case "4. Show my borrowed books":
+                    break;
+
+                case "5. Logout":
+                    break;
+
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.ReadKey();
+        }
+
+    }
 }
 
 void AdminMenu()
 {
+    while (true)
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(FiggleFonts.Standard.Render("Admin Panel"));
+        Console.ResetColor();
 
+        var select = Prompt.Select("Select an option", new[]
+        {
+            "1. Show all users",
+            "2. Activate user",
+            "3. Deactivate user",
+            "4. Add a new book",
+            "5. Add a new category",
+            "6. Show all books",
+            "7. Show all categories"
+        });
+
+        try
+        {
+            switch (select)
+            {
+                case "1. Show all users":
+                    break;
+
+                case "2. Activate user":
+                    break;
+
+                case "3. Deactivate user":
+                    break;
+
+                case "4. Add a new book":
+                    break;
+
+                case "5. Add a new category":
+                    break;
+
+                case "6. Show all books":
+                    break;
+
+                case "7. Show all categories":
+                    break;
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.ReadKey();
+        }
+
+    }
 }

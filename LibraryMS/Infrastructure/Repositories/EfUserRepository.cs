@@ -28,6 +28,16 @@ public class EfUserRepository : IUserRepository
         return _appDbContext.Users.ToList();
     }
 
+    public List<User> GetAllActive()
+    {
+        return _appDbContext.Users.Where(x=>x.IsActive == true).ToList();
+    }
+
+    public List<User> GetAllInActive()
+    {
+        return _appDbContext.Users.Where(x => x.IsActive == false).ToList();
+    }
+
 
     // ask a qs 
     public void Update(User user)

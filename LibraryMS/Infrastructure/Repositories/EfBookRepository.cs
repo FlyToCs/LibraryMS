@@ -10,6 +10,7 @@ public class EfBookRepository : IBookRepository
     public int Add(Book book)
     {
         _context.Books.Add(book);
+        _context.SaveChanges();
         return book.Id;
     }
 
@@ -19,16 +20,30 @@ public class EfBookRepository : IBookRepository
             .Include(x => x.BookCategory)
             .Include(x => x.BorrowedBooks).ToList();
     }
-    public List<Book> GetAllAvailable()
+
+    public List<Book> GetBorrowedBooks()
     {
         return _context.Books
             .Include(x => x.BookCategory)
-            .Include(x => x.BorrowedBooks).Where(x=>x.IsBorrow == false).ToList();
+            .Include(x => x.BorrowedBooks)
+            .Where(x => x.IsBorrow == true).ToList();
     }
+
+    public List<Book> GetUnBorrowedBooks()
+    {
+        return _context.Books
+            .Include(x => x.BookCategory)
+            .Include(x => x.BorrowedBooks)
+            .Where(x => x.IsBorrow == false).ToList();
+    }
+
 
     public Book? GetById(int id)
     {
-        return _context.Books.Find(id);
+        return _context.Books
+            .Include(x => x.BookCategory)
+            .Include(x => x.BorrowedBooks)
+            .FirstOrDefault(x => x.Id == id);
     }
 
     public void Update(Book book)
