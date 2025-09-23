@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Application Service\" />
-    <Folder Include="Domain\Contracts\Service Contracts\" />
+    <Folder Include="Application Service\Custome Exceptions\" />
     <Folder Include="Domain\Enums\" />
     <Folder Include="Domain\Exceptions\" />
     <Folder Include="Infrastructure\Repositories\" />
