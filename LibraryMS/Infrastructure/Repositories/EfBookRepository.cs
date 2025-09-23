@@ -15,7 +15,15 @@ public class EfBookRepository : IBookRepository
 
     public List<Book> GetAll()
     {
-        return _context.Books.Include(x=>x.BookCategory).ToList();
+        return _context.Books
+            .Include(x => x.BookCategory)
+            .Include(x => x.BorrowedBooks).ToList();
+    }
+    public List<Book> GetAllAvailable()
+    {
+        return _context.Books
+            .Include(x => x.BookCategory)
+            .Include(x => x.BorrowedBooks).Where(x=>x.IsBorrow == false).ToList();
     }
 
     public Book? GetById(int id)

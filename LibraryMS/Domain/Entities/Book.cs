@@ -11,7 +11,7 @@ public class Book
     public BookCategory BookCategory { get; set; }
     public int BookCategoryId { get; set; }
 
-    public List<BorrowedBook> BorrowedBooks { get; set; }
+    public List<BorrowedBook> BorrowedBooks { get; set; } = [];
 
 
 }
