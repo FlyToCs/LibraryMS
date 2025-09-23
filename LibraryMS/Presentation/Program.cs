@@ -103,11 +103,7 @@ void AuthenticationMenu()
                         "Member",
                         "Admin"
                     });
-                    UserRoleEnum newRoll;
-                    if (roll == "Member")
-                        newRoll = UserRoleEnum.Member;
-                    else
-                        newRoll = UserRoleEnum.Admin;
+                    var newRoll = roll == "Member" ? UserRoleEnum.Member : UserRoleEnum.Admin;
 
 
                     authentication.Register(newFirstName, newLastName, newUsername, newPassword, newEmail, newRoll);
@@ -126,8 +122,6 @@ void AuthenticationMenu()
             Console.WriteLine(e.Message);
             Console.ReadKey();
         }
-
-
     }
 }
 

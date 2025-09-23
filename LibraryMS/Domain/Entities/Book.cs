@@ -8,4 +8,5 @@ public class Book
     public string Author { get; set; }
     public BookCategory BookCategory { get; set; }
     public int BookCategoryId { get; set; }
+    public bool IsBorrow { get; set; }
 }
