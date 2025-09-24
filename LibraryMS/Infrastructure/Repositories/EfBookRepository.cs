@@ -6,9 +6,6 @@ namespace LibraryMS.Infrastructure.Repositories;
 
 public class EfBookRepository : IBookRepository
 {
-    // این خط باید حذف شود
-    // private readonly AppDbContext _context = new AppDbContext();
-
     public int Add(Book book)
     {
         using (var _context = new AppDbContext())
