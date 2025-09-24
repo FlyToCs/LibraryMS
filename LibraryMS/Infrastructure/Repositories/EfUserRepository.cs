@@ -5,116 +5,92 @@ namespace LibraryMS.Infrastructure.Repositories;
 
 public class EfUserRepository : IUserRepository
 {
-    // این خط را حذف کنید چون دیگر به یک نمونه ثابت نیاز نداریم
-    // private readonly AppDbContext _appDbContext = new AppDbContext();
-
     public int Add(User user)
     {
-        // برای هر متد یک context جدید بسازید
-        using (var _appDbContext = new AppDbContext())
-        {
-            _appDbContext.Users.Add(user);
-            _appDbContext.SaveChanges();
-            return user.Id;
-        }
+        using var appDbContext = new AppDbContext();
+        appDbContext.Users.Add(user);
+        appDbContext.SaveChanges();
+        return user.Id;
     }
 
     public User? GetById(int id)
     {
-        using (var _appDbContext = new AppDbContext())
-        {
-            return _appDbContext.Users.Find(id);
-        }
+        using var appDbContext = new AppDbContext();
+        return appDbContext.Users.Find(id);
     }
 
     public User? GetByUserName(string userName)
     {
-        using (var _appDbContext = new AppDbContext())
-        {
-            return _appDbContext.Users.SingleOrDefault(x => x.Username == userName);
-        }
+        using var appDbContext = new AppDbContext();
+        return appDbContext.Users.SingleOrDefault(x => x.Username == userName);
     }
 
     public List<User> GetAll()
     {
-        using (var _appDbContext = new AppDbContext())
-        {
-            return _appDbContext.Users.ToList();
-        }
+        using var appDbContext = new AppDbContext();
+        return appDbContext.Users.ToList();
     }
 
     public List<User> GetAllActive()
     {
-        using (var _appDbContext = new AppDbContext())
-        {
-            return _appDbContext.Users.Where(x => x.IsActive == true).ToList();
-        }
+        using var appDbContext = new AppDbContext();
+        return appDbContext.Users.Where(x => x.IsActive == true).ToList();
     }
 
     public List<User> GetAllInActive()
     {
-        using (var _appDbContext = new AppDbContext())
-        {
-            return _appDbContext.Users.Where(x => x.IsActive == false).ToList();
-        }
+        using var appDbContext = new AppDbContext();
+        return appDbContext.Users.Where(x => x.IsActive == false).ToList();
     }
 
     public bool Activate(int id)
     {
-        using (var _appDbContext = new AppDbContext())
+        using var appDbContext = new AppDbContext();
+        var user = appDbContext.Users.Find(id);
+        if (user != null)
         {
-            var user = _appDbContext.Users.Find(id);
-            if (user != null)
-            {
-                user.IsActive = true;
-                _appDbContext.SaveChanges();
-                return true;
-            }
-            return false;
+            user.IsActive = true;
+            appDbContext.SaveChanges();
+            return true;
         }
+        return false;
     }
 
     public bool DeActivate(int id)
     {
-        using (var _appDbContext = new AppDbContext())
+        using var appDbContext = new AppDbContext();
+        var user = appDbContext.Users.Find(id);
+        if (user != null)
         {
-            var user = _appDbContext.Users.Find(id);
-            if (user != null)
-            {
-                user.IsActive = false;
-                _appDbContext.SaveChanges();
-                return true;
-            }
-            return false;
+            user.IsActive = false;
+            appDbContext.SaveChanges();
+            return true;
         }
+        return false;
     }
 
     public void Update(User user)
     {
-        using (var _appDbContext = new AppDbContext())
+        using var appDbContext = new AppDbContext();
+        var findUser = appDbContext.Users.SingleOrDefault(x => x.Id == user.Id);
+        if (findUser != null)
         {
-            var findUser = _appDbContext.Users.SingleOrDefault(x => x.Id == user.Id);
-            if (findUser != null)
-            {
-                findUser.FirstName = user.FirstName;
-                findUser.LastName = user.LastName;
-                findUser.Email = user.Email;
-                findUser.IsActive = user.IsActive;
-                _appDbContext.SaveChanges();
-            }
+            findUser.FirstName = user.FirstName;
+            findUser.LastName = user.LastName;
+            findUser.Email = user.Email;
+            findUser.IsActive = user.IsActive;
+            appDbContext.SaveChanges();
         }
     }
 
     public void Delete(int id)
     {
-        using (var _appDbContext = new AppDbContext())
+        using var appDbContext = new AppDbContext();
+        var user = appDbContext.Users.Find(id);
+        if (user != null)
         {
-            var user = _appDbContext.Users.Find(id);
-            if (user != null)
-            {
-                _appDbContext.Users.Remove(user);
-                _appDbContext.SaveChanges();
-            }
+            appDbContext.Users.Remove(user);
+            appDbContext.SaveChanges();
         }
     }
 }

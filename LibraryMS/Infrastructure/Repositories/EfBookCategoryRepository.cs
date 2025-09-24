@@ -8,80 +8,66 @@ public class EfBookCategoryRepository : IBookCategoryRepository
 
     public int Add(BookCategory bookCategory)
     {
-        using (var _context = new AppDbContext())
-        {
-            _context.BookCategories.Add(bookCategory);
-            _context.SaveChanges();
-            return bookCategory.Id;
-        }
+        using var context = new AppDbContext();
+        context.BookCategories.Add(bookCategory);
+        context.SaveChanges();
+        return bookCategory.Id;
     }
 
     public List<BookCategory> GetAll()
     {
-        using (var _context = new AppDbContext())
-        {
-            return _context.BookCategories.ToList();
-        }
+        using var context = new AppDbContext();
+        return context.BookCategories.ToList();
     }
 
     public BookCategory? GetById(int id)
     {
-        using (var _context = new AppDbContext())
-        {
-            return _context.BookCategories.FirstOrDefault(x => x.Id == id);
-        }
+        using var context = new AppDbContext();
+        return context.BookCategories.FirstOrDefault(x => x.Id == id);
     }
 
     public BookCategory? GetByName(string name)
     {
-        using (var _context = new AppDbContext())
-        {
-            return _context.BookCategories.FirstOrDefault(x => x.Name == name);
-        }
+        using var context = new AppDbContext();
+        return context.BookCategories.FirstOrDefault(x => x.Name == name);
     }
 
     public bool Delete(int id)
     {
-        using (var _context = new AppDbContext())
+        using var context = new AppDbContext();
+        var bookCategory = context.BookCategories.Find(id);
+        if (bookCategory != null)
         {
-            var bookCategory = _context.BookCategories.Find(id);
-            if (bookCategory != null)
-            {
-                _context.BookCategories.Remove(bookCategory);
-                _context.SaveChanges();
-                return true;
-            }
-            return false;
+            context.BookCategories.Remove(bookCategory);
+            context.SaveChanges();
+            return true;
         }
+        return false;
     }
 
     public bool Update(BookCategory bookCategory)
     {
-        using (var _context = new AppDbContext())
+        using var context = new AppDbContext();
+        var oldBookCategory = context.BookCategories.Find(bookCategory.Id);
+        if (oldBookCategory != null)
         {
-            var oldBookCategory = _context.BookCategories.Find(bookCategory.Id);
-            if (oldBookCategory != null)
-            {
-                oldBookCategory.Name = bookCategory.Name;
-                _context.SaveChanges();
-                return true;
-            }
-            return false;
+            oldBookCategory.Name = bookCategory.Name;
+            context.SaveChanges();
+            return true;
         }
+        return false;
     }
 
     public bool UpdateBookCategoryName(int id, string name)
     {
-        using (var _context = new AppDbContext())
+        using var context = new AppDbContext();
+        var oldBookCategory = context.BookCategories.Find(id);
+        if (oldBookCategory != null)
         {
-            var oldBookCategory = _context.BookCategories.Find(id);
-            if (oldBookCategory != null)
-            {
-                oldBookCategory.Name = name;
-                _context.SaveChanges();
-                return true;
-            }
-            return false;
+            oldBookCategory.Name = name;
+            context.SaveChanges();
+            return true;
         }
+        return false;
     }
 }
