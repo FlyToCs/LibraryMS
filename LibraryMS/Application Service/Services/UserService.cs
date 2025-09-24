@@ -25,6 +25,16 @@ public class UserService : IUserService
         return user;
     }
 
+    public void Activate(int id)
+    {
+        _userRepo.Activate(id);
+    }
+
+    public void Deactivate(int id)
+    {
+        _userRepo.DeActivate(id);
+    }
+
     public List<User> GetAll()
     {
         return _userRepo.GetAll();

@@ -10,6 +10,8 @@ public interface IUserRepository
     List<User> GetAll();
     List<User> GetAllActive();
     List<User> GetAllInActive();
+    bool Activate(int id);
+    bool DeActivate(int id);
     void Update(User user);
     void Delete(int id);
 }

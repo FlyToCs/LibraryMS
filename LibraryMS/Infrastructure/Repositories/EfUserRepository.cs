@@ -38,6 +38,32 @@ public class EfUserRepository : IUserRepository
         return _appDbContext.Users.Where(x => x.IsActive == false).ToList();
     }
 
+    public bool Activate(int id)
+    {
+        var user = _appDbContext.Users.Find(id);
+        if (user != null)
+        {
+            user.IsActive = true;
+            _appDbContext.SaveChanges();
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool DeActivate(int id)
+    {
+        var user = _appDbContext.Users.Find(id);
+        if (user != null)
+        {
+            user.IsActive = false;
+            _appDbContext.SaveChanges();
+            return true;
+        }
+
+        return false;
+    }
+
 
     // ask a qs 
     public void Update(User user)

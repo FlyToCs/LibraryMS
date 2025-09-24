@@ -49,7 +49,7 @@ IBookCategoryService bookCategoryService = new CategoryService();
 
 AnsiConsole.MarkupLine("[bold cyan]✔ Application started successfully![/]");
 Console.ReadKey();
-User currentUser = null!;
+User? currentUser = null!;
 AuthenticationMenu();
 
 
@@ -170,19 +170,23 @@ void MemberMenu()
             switch (select)
             {
                 case "1. Show all books":
-                    
+                    ConsolePainter.WriteTable(bookService.GetUnBorrowedBooks());
+                    Console.ReadKey();
                     break;
 
                 case "2. Show books based on categories":
                     break;
 
                 case "3. Borrow a book":
+                    ConsolePainter.WriteTable(bookService.GetUnBorrowedBooks());
+                    Console.ReadKey();
                     break;
 
                 case "4. Show my borrowed books":
                     break;
 
                 case "5. Logout":
+                    AuthenticationMenu();
                     break;
 
             }
@@ -214,7 +218,8 @@ void AdminMenu()
             "4. Add a new book",
             "5. Add a new category",
             "6. Show all books",
-            "7. Show all categories"
+            "7. Show all categories",
+            "8. Logout"
         });
 
         try
@@ -229,16 +234,39 @@ void AdminMenu()
 
                 case "2. Activate user":
                     ConsolePainter.WriteTable(userService.GetAllInActive());
+                    Console.Write("Enter an id: ");
+                    int idToActivate = int.Parse(Console.ReadLine()!);
+                    userService.Activate(idToActivate);
+                    ConsolePainter.GreenMessage("user status changed");
                     Console.ReadKey();
                     break;
 
                 case "3. Deactivate user":
                     ConsolePainter.WriteTable(userService.GetAllActive());
+                    Console.Write("Enter an id: ");
+                    int idToDeActivate = int.Parse(Console.ReadLine()!);
+                    userService.Deactivate(idToDeActivate);
+                    ConsolePainter.GreenMessage("user status changed");
                     Console.ReadKey();
                     break;
 
                 case "4. Add a new book":
-                    //string title, string description, string author
+                    
+                    Console.Write("Enter book title: ");
+                    string newBookTitle = Console.ReadLine()!;
+
+                    Console.Write("Enter book description: ");
+                    string newBookDescription = Console.ReadLine()!;
+
+                    Console.Write("Enter book author: ");
+                    string newAuthor = Console.ReadLine()!;
+
+                    Console.Write("Enter book categoryId: ");
+                    int newBookCategoryId = int.Parse(Console.ReadLine()!);
+
+                    bookService.Add(newBookTitle, newBookDescription, newAuthor, newBookCategoryId);
+                    ConsolePainter.GreenMessage("The new book added");
+                    Console.ReadKey();
                     break;
 
                 case "5. Add a new category":
@@ -256,6 +284,9 @@ void AdminMenu()
                 case "7. Show all categories":
                     ConsolePainter.WriteTable(bookCategoryService.GetAll());
                     Console.ReadKey();
+                    break;
+                case "8. Logout":
+                    AuthenticationMenu();
                     break;
             }
 
