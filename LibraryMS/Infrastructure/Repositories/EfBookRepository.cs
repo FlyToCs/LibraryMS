@@ -28,20 +28,27 @@ public class EfBookRepository : IBookRepository
         using var context = new AppDbContext();
         return context.Books
             .Include(x => x.BookCategory)
-            .Include(x => x.BorrowedBooks)
-            .Where(x => x.IsBorrow == true)
+            .Where(book => book.BorrowedBooks.Any(borrow => borrow.ReturnDate == null))
             .ToList();
     }
-
     public List<Book> GetUnBorrowedBooks()
     {
         using var context = new AppDbContext();
         return context.Books
             .Include(x => x.BookCategory)
-            .Include(x => x.BorrowedBooks)
-            .Where(x => x.IsBorrow == false)
+            .Where(book => book.BorrowedBooks.All(borrow => borrow.ReturnDate != null))
             .ToList();
+
     }
+    // public List<Book> GetUnBorrowedBooks()
+    // {
+    //     using var context = new AppDbContext();
+    //     return context.Books
+    //         .Include(x => x.BookCategory)
+    //         .Include(x => x.BorrowedBooks)
+    //         .Where(x => x.IsBorrow == false)
+    //         .ToList();
+    // }
 
     public Book? GetById(int id)
     {

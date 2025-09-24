@@ -9,8 +9,8 @@ public class BorrowedBook
     public Book Book { get; set; }
 
 
-    public int MemberId { get; set; }
-    public MemberProfile Member { get; set; }
+    public int UserId { get; set; }
+    public User User { get; set; }
 
 
     public DateTime BorrowDate { get; set; }
