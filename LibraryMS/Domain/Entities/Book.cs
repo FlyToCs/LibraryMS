@@ -13,5 +13,17 @@ public class Book
 
     public List<BorrowedBook> BorrowedBooks { get; set; } = [];
 
+    //ask it
+    public Book(string title, string description, string author)
+    {
+        Title = title;
+        Description = description;
+        Author = author;
+    }
+
+    public Book()
+    {
+        
+    }
 
 }

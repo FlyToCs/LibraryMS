@@ -30,6 +30,16 @@ public class UserService : IUserService
         return _userRepo.GetAll();
     }
 
+    public List<User> GetAllActive()
+    {
+        return _userRepo.GetAllActive();
+    }
+
+    public List<User> GetAllInActive()
+    {
+        return _userRepo.GetAllInActive();
+    }
+
     public void Update(User user)
     {
         var existing = _userRepo.GetById(user.Id);

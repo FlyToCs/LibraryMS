@@ -7,9 +7,15 @@ namespace LibraryMS.Application_Service.Services;
 public class CategoryService : IBookCategoryService
 {
     private readonly EfBookCategoryRepository _bookCategoryRepository = new EfBookCategoryRepository();
-    public int Add(BookCategory bookCategory)
+    public int Add(string name)
     {
-        return _bookCategoryRepository.Add(bookCategory);
+        var newCategory = new BookCategory(name);
+        return _bookCategoryRepository.Add(newCategory);
+    }
+
+    public List<BookCategory> GetAll()
+    {
+        return _bookCategoryRepository.GetAll();
     }
 
     public BookCategory GetById(int id)

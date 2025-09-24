@@ -4,7 +4,7 @@ namespace LibraryMS.Domain.Contracts.Service_Contracts;
 
 public interface IBookService
 { 
-    int Add(Book book);
+    int Add(string title, string description, string author);
     Book GetById(int id);
     List<Book> GetAll();
     List<Book> GetBorrowedBooks();

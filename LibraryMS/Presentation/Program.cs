@@ -4,6 +4,7 @@ using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Contracts.Service_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Domain.Enums;
+using LibraryMS.Framework;
 using LibraryMS.Infrastructure.Repositories;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Sharprompt;
@@ -12,9 +13,10 @@ Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 
 
-IAuthenticationService authentication = new AuthenticationService();
+IAuthenticationService authenticationService = new AuthenticationService();
 IBookService bookService = new BookService();
 IUserService userService = new UserService();
+IBookCategoryService bookCategoryService = new CategoryService();
 
 
 
@@ -84,7 +86,7 @@ void AuthenticationMenu()
 
                     Console.Write("Password: ");
                     string password = Console.ReadLine()!;
-                    currentUser = authentication.Login(userName, password);
+                    currentUser = authenticationService.Login(userName, password);
 
 
                     if (currentUser != null && currentUser.UserRole == UserRoleEnum.Member)
@@ -122,7 +124,7 @@ void AuthenticationMenu()
                     var newRoll = roll == "Member" ? UserRoleEnum.Member : UserRoleEnum.Admin;
 
 
-                    authentication.Register(newFirstName, newLastName, newUsername, newPassword, newEmail, newRoll);
+                    authenticationService.Register(newFirstName, newLastName, newUsername, newPassword, newEmail, newRoll);
 
                     
                     Console.WriteLine("registration successfully");
@@ -220,24 +222,40 @@ void AdminMenu()
             switch (select)
             {
                 case "1. Show all users":
+                    
+                    ConsolePainter.WriteTable(userService.GetAll());
+                    Console.ReadKey();
                     break;
 
                 case "2. Activate user":
+                    ConsolePainter.WriteTable(userService.GetAllInActive());
+                    Console.ReadKey();
                     break;
 
                 case "3. Deactivate user":
+                    ConsolePainter.WriteTable(userService.GetAllActive());
+                    Console.ReadKey();
                     break;
 
                 case "4. Add a new book":
+                    //string title, string description, string author
                     break;
 
                 case "5. Add a new category":
+                    Console.Write("Enter Category name: ");
+                    string categoryName = Console.ReadLine()!;
+                    bookCategoryService.Add(categoryName);
+                    ConsolePainter.GreenMessage("new category added");
                     break;
 
                 case "6. Show all books":
+                    ConsolePainter.WriteTable(bookService.GetAll()); 
+                    Console.ReadKey();
                     break;
 
                 case "7. Show all categories":
+                    ConsolePainter.WriteTable(bookCategoryService.GetAll());
+                    Console.ReadKey();
                     break;
             }
 

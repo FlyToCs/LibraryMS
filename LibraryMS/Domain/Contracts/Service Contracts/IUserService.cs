@@ -7,6 +7,8 @@ public interface IUserService
     int Add(User user);
     User? GetById(int id);
     List<User> GetAll();
+    List<User> GetAllActive();
+    List<User> GetAllInActive();
     void Update(User user);
     void Delete(int id);
 }
