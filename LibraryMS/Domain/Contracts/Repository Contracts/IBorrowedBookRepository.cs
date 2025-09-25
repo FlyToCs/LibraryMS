@@ -9,7 +9,5 @@ public interface IBorrowedBookRepository
     BorrowedBook? GetActiveBorrowByBookId(int bookId);
     BorrowedBook? GetActiveBorrowByUserAndBook(int userId, int bookId);
     List<BorrowedBook> GetBorrowHistoryByUserId(int userId);
-
     List<BorrowedBook> GetActiveBorrowsByUserId(int userId);
-
 }

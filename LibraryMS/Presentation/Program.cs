@@ -137,7 +137,7 @@ void AuthenticationMenu()
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            AnsiConsole.MarkupLine($"[bold red]❌ Error: {e.Message}[/]");
             Console.ReadKey();
         }
     }
@@ -157,9 +157,10 @@ void MemberMenu()
             "1. Show all books",
             "2. Show books based on categories",
             "3. Borrow a book",
-            "4. Show my borrowed books",
-            "5. Return a book",
-            "6. Logout"
+            "4. Show my borrowed book history",
+            "5. Show borrowed books",
+            "6. Return a book",
+            "7. Logout"
         });
 
 
@@ -169,57 +170,203 @@ void MemberMenu()
             switch (select)
             {
                 case "1. Show all books":
-                    ConsolePainter.WriteTable(bookService.GetUnBorrowedBooks());
+                {
+                    var books = bookService.GetUnBorrowedBooks();
+
+                    if (books == null || books.Count == 0)
+                    {
+                        AnsiConsole.MarkupLine("[red]📕 No available books found![/]");
+                    }
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]📚 Available Books[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]Title[/]");
+                        table.AddColumn("[green]Author[/]");
+                        table.AddColumn("[blue]Category[/]");
+
+                        foreach (var book in books)
+                        {
+                            table.AddRow(
+                                book.Id.ToString(),
+                                $"[bold]{book.Title}[/]",
+                                book.Author ?? "[grey]-[/]",
+                                book.CategoryName ?? "[grey]-[/]"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
                     Console.ReadKey();
                     break;
+                }
+
 
                 case "2. Show books based on categories":
                     break;
 
                 case "3. Borrow a book":
-                    ConsolePainter.WriteTable(bookService.GetUnBorrowedBooks());
-                    Console.Write("Enter book ID to borrow: ");
-                    int bookIdToBorrow = int.Parse(Console.ReadLine()!);
-                    borrowedBookService.BorrowBook(currentUser.Id, bookIdToBorrow);
-                    ConsolePainter.GreenMessage("Book borrowed successfully!");
-                    Console.ReadKey();
-                    break;
+                {
+                    var books = bookService.GetUnBorrowedBooks();
 
-                case "4. Show my borrowed books":
-                    var  myBorrows = borrowedBookService.GetMyBorrowHistory(currentUser.Id);
-                    if (!myBorrows.Any())
+                    if (books == null || books.Count == 0)
                     {
-                        Console.WriteLine("You have not borrowed any books.");
+                        AnsiConsole.MarkupLine("[red]📕 No available books to borrow![/]");
                     }
                     else
                     {
-                        ConsolePainter.WriteTable(myBorrows);
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]📚 Available Books[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]Title[/]");
+                        table.AddColumn("[green]Author[/]");
+                        table.AddColumn("[blue]Category[/]");
+
+                        foreach (var book in books)
+                        {
+                            table.AddRow(
+                                book.Id.ToString(),
+                                $"[bold]{book.Title}[/]",
+                                book.Author ?? "[grey]-[/]",
+                                book.CategoryName ?? "[grey]-[/]"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                        int bookIdToBorrow = AnsiConsole.Ask<int>("[bold yellow]Enter book ID to borrow:[/]");
+                        borrowedBookService.BorrowBook(currentUser.Id, bookIdToBorrow);
+                        AnsiConsole.MarkupLine("[bold green]✅ Book borrowed successfully![/]");
                     }
+
                     Console.ReadKey();
                     break;
+                }
 
-                case "5. Return a book":
 
-                    var myActiveBorrows = borrowedBookService.GetMyActiveBorrows(currentUser.Id);
-                    if (!myActiveBorrows.Any())
+                case "4. Show my borrowed book history":
+                {
+                    var myBorrows = borrowedBookService.GetMyBorrowHistory(currentUser.Id);
+
+                    if (myBorrows == null || !myBorrows.Any())
                     {
-                        Console.WriteLine("You do not have any books to return at the moment.");
-                        Console.ReadKey();
-                        break; 
+                        AnsiConsole.MarkupLine("[red]📕 You have not borrowed any books.[/]");
                     }
-                    Console.WriteLine("--- Here are the books you are currently borrowing ---");
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]📚 My Borrowed Book History[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]Book Name[/]");
+                        table.AddColumn("[blue]Borrowed Date[/]");
+                        table.AddColumn("[green]Return Date[/]");
+
+                        foreach (var borrow in myBorrows)
+                        {
+                            table.AddRow(
+                                $"[bold]{borrow.Name}[/]",
+                                borrow.BorrowedDate.ToString("yyyy/MM/dd"),
+                                borrow.ReturnDate?.ToString("yyyy/MM/dd") ?? "[grey]Not returned[/]"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
+                    Console.ReadKey();
+                    break;
+                }
+
+
+                case "5. Show borrowed books":
+                {
+                    var activeBorrows = borrowedBookService.GetMyActiveBorrows(currentUser.Id);
+
+                    if (activeBorrows == null || !activeBorrows.Any())
+                    {
+                        AnsiConsole.MarkupLine("[red]📕 You have no active borrowed books.[/]");
+                    }
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]📚 My Active Borrowed Books[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]Title[/]");
+                        table.AddColumn("[blue]Borrowed Date[/]");
+                        table.AddColumn("[green]Return Date[/]");
+
+                        foreach (var borrow in activeBorrows)
+                        {
+                            table.AddRow(
+                                borrow.Id.ToString(),
+                                $"[bold]{borrow.Title}[/]",
+                                borrow.BorrowedDate.ToString("yyyy/MM/dd"),
+                                borrow.ReturnDate?.ToString("yyyy/MM/dd") ?? "[grey]Not returned[/]"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
+                    Console.ReadKey();
+                    break;
+                }
+
+
+                case "6. Return a book":
+                {
+                    var myActiveBorrows = borrowedBookService.GetMyActiveBorrows(currentUser.Id);
+
+                    if (myActiveBorrows == null || !myActiveBorrows.Any())
+                    {
+                        AnsiConsole.MarkupLine("[red]📕 You do not have any books to return at the moment.[/]");
+                        Console.ReadKey();
+                        break;
+                    }
+
+                    var table = new Table()
+                        .Border(TableBorder.Rounded)
+                        .Title("[bold green]📚 Your Currently Borrowed Books[/]")
+                        .Expand();
+
+                    table.AddColumn("[yellow]ID[/]");
+                    table.AddColumn("[cyan]Title[/]");
+                    table.AddColumn("[blue]Borrowed Date[/]");
+                    table.AddColumn("[green]Return Date[/]");
+
                     foreach (var borrow in myActiveBorrows)
                     {
-                        Console.WriteLine($"  ID: {borrow.Book.Id}, Title: {borrow.Book.Title}");
+                        table.AddRow(
+                            borrow.Id.ToString(),
+                            $"[bold]{borrow.Title}[/]",
+                            borrow.BorrowedDate.ToString("yyyy/MM/dd"),
+                            borrow.ReturnDate?.ToString("yyyy/MM/dd") ?? "[grey]Not returned[/]"
+                        );
                     }
-                    Console.Write("\nEnter the ID of the book you want to return: ");
-                    int bookIdToReturn = int.Parse(Console.ReadLine()!);
+
+                    AnsiConsole.Write(table);
+
+                    int bookIdToReturn = AnsiConsole.Ask<int>("[bold yellow]Enter the ID of the book you want to return:[/]");
                     borrowedBookService.ReturnBook(currentUser.Id, bookIdToReturn);
-                    ConsolePainter.GreenMessage("Book returned successfully!");
+                    AnsiConsole.MarkupLine("[bold green]✅ Book returned successfully![/]");
                     Console.ReadKey();
                     break;
+                }
 
-                case "6. Logout":
+
+                case "7. Logout":
                     AuthenticationMenu();
                     break;
 
@@ -228,7 +375,7 @@ void MemberMenu()
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            AnsiConsole.MarkupLine($"[bold red]❌ Error: {e.Message}[/]");
             Console.ReadKey();
         }
 
@@ -264,28 +411,133 @@ void AdminMenu()
             switch (select)
             {
                 case "1. Show all users":
-                    
-                    ConsolePainter.WriteTable(userService.GetAll());
+                {
+                    var users = userService.GetAll();
+
+                    if (users == null || !users.Any())
+                    {
+                        AnsiConsole.MarkupLine("[red]📕 No users found.[/]");
+                    }
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]👥 All Users[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]Full Name[/]");
+                        table.AddColumn("[green]Email[/]");
+                        table.AddColumn("[blue]Username[/]");
+                        table.AddColumn("[magenta]Role[/]");
+                        table.AddColumn("[red]Status[/]");
+
+                        foreach (var user in users)
+                        {
+                            table.AddRow(
+                                user.Id.ToString(),
+                                $"[bold]{user.FirstName} {user.LastName}[/]",
+                                user.Email ?? "[grey]-[/]",
+                                user.Username ?? "[grey]-[/]",
+                                user.UserRole.ToString(),
+                                user.IsActive ? "[green]Active[/]" : "[red]Inactive[/]"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
                     Console.ReadKey();
                     break;
+                }
+
 
                 case "2. Activate user":
-                    ConsolePainter.WriteTable(userService.GetAllInActive());
-                    Console.Write("Enter an id: ");
-                    int idToActivate = int.Parse(Console.ReadLine()!);
-                    userService.Activate(idToActivate);
-                    ConsolePainter.GreenMessage("user status changed");
-                    Console.ReadKey();
-                    break;
+                    {
+                        var inactiveUsers = userService.GetAllInActive();
+
+                        if (inactiveUsers == null || !inactiveUsers.Any())
+                        {
+                            AnsiConsole.MarkupLine("[red]❌ No inactive users found.[/]");
+                        }
+                        else
+                        {
+                            var table = new Table()
+                                .Border(TableBorder.Rounded)
+                                .Title("[bold green]🔹 Inactive Users[/]")
+                                .Expand();
+
+                            table.AddColumn("[yellow]ID[/]");
+                            table.AddColumn("[cyan]Full Name[/]");
+                            table.AddColumn("[green]Username[/]");
+                            table.AddColumn("[blue]Role[/]");
+
+                            foreach (var user in inactiveUsers)
+                            {
+                                table.AddRow(
+                                    user.Id.ToString(),
+                                    $"[bold]{user.FullName}[/]",
+                                    user.Username,
+                                    user.Roll.ToString()
+                                );
+                            }
+
+                            AnsiConsole.Write(table);
+
+                            int idToActivate = AnsiConsole.Ask<int>("[bold yellow]Enter the ID of the user to activate:[/]");
+
+                            userService.Activate(idToActivate);
+
+                            AnsiConsole.MarkupLine("[bold green]✅ User status changed successfully![/]");
+                        }
+
+                        Console.ReadKey();
+                        break;
+                    }
 
                 case "3. Deactivate user":
-                    ConsolePainter.WriteTable(userService.GetAllActive());
-                    Console.Write("Enter an id: ");
-                    int idToDeActivate = int.Parse(Console.ReadLine()!);
-                    userService.Deactivate(idToDeActivate);
-                    ConsolePainter.GreenMessage("user status changed");
-                    Console.ReadKey();
-                    break;
+                    {
+                        var activeUsers = userService.GetAllActive();
+
+                        if (activeUsers == null || !activeUsers.Any())
+                        {
+                            AnsiConsole.MarkupLine("[red]❌ No active users found.[/]");
+                        }
+                        else
+                        {
+                            var table = new Table()
+                                .Border(TableBorder.Rounded)
+                                .Title("[bold green]🔹 Active Users[/]")
+                                .Expand();
+
+                            table.AddColumn("[yellow]ID[/]");
+                            table.AddColumn("[cyan]Full Name[/]");
+                            table.AddColumn("[green]Username[/]");
+                            table.AddColumn("[blue]Role[/]");
+
+                            foreach (var user in activeUsers)
+                            {
+                                table.AddRow(
+                                    user.Id.ToString(),
+                                    $"[bold]{user.FullName}[/]",
+                                    user.Username,
+                                    user.Roll.ToString()
+                                );
+                            }
+
+                            AnsiConsole.Write(table);
+
+                            int idToDeActivate = AnsiConsole.Ask<int>("[bold yellow]Enter the ID of the user to deactivate:[/]");
+
+                            userService.Deactivate(idToDeActivate);
+
+                            AnsiConsole.MarkupLine("[bold green]✅ User status changed successfully![/]");
+                        }
+
+                        Console.ReadKey();
+                        break;
+                    }
+
 
                 case "4. Add a new book":
                     
@@ -307,21 +559,89 @@ void AdminMenu()
                     break;
 
                 case "5. Add a new category":
-                    Console.Write("Enter Category name: ");
-                    string categoryName = Console.ReadLine()!;
+                {
+                    string categoryName = AnsiConsole.Ask<string>("[bold yellow]Enter the category name:[/]");
                     bookCategoryService.Add(categoryName);
-                    ConsolePainter.GreenMessage("new category added");
+                    AnsiConsole.MarkupLine("[bold green]✅ New category added successfully![/]");
+                    Console.ReadKey();
                     break;
+                }
+
 
                 case "6. Show all books":
-                    ConsolePainter.WriteTable(bookService.GetAll()); 
+                {
+                    var books = bookService.GetAll();
+                    if (books == null || !books.Any())
+                    {
+                        AnsiConsole.MarkupLine("[red]📕 No books found.[/]");
+                    }
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]📚 All Books[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]Title[/]");
+                        table.AddColumn("[green]Author[/]");
+                        table.AddColumn("[blue]Category[/]");
+                        table.AddColumn("[magenta]Description[/]");
+
+                        foreach (var book in books)
+                        {
+                            table.AddRow(
+                                book.Id.ToString(),
+                                $"[bold]{book.Title}[/]",
+                                book.Author ?? "[grey]-[/]",
+                                book.CategoryName ?? "[grey]-[/]",
+                                book.Description ?? "[grey]-[/]"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
                     Console.ReadKey();
                     break;
+                }
+
 
                 case "7. Show all categories":
-                    ConsolePainter.WriteTable(bookCategoryService.GetAll());
+                {
+                    var categories = bookCategoryService.GetAll();
+
+                    if (categories == null || !categories.Any())
+                    {
+                        AnsiConsole.MarkupLine("[red]📕 No categories found.[/]");
+                    }
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]📚 All Book Categories[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]Category Name[/]");
+                        table.AddColumn("[green]Number of Books[/]");
+
+                        foreach (var category in categories)
+                        {
+                            table.AddRow(
+                                category.Id.ToString(),
+                                $"[bold]{category.Name}[/]",
+                                category.Books?.Count.ToString() ?? "0"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
                     Console.ReadKey();
                     break;
+                }
+
                 case "8. Logout":
                     AuthenticationMenu();
                     break;
@@ -330,7 +650,7 @@ void AdminMenu()
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            AnsiConsole.MarkupLine($"[bold red]❌ Error: {e.Message}[/]");
             Console.ReadKey();
         }
 

@@ -1,4 +1,6 @@
-﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
+﻿using System.Security.Cryptography.X509Certificates;
+using LibraryMS.Application_Service.DTOs;
+using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Contracts.Service_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Infrastructure;
@@ -17,12 +19,19 @@ public class UserService : IUserService
         return _userRepo.Add(user);
     }
 
-    public User GetById(int id)
+    public UserDto GetById(int id)
     {
         var user = _userRepo.GetById(id);
         if (user == null)
             throw new KeyNotFoundException($"User with id {id} not found.");
-        return user;
+        return new UserDto()
+        {
+            Id = user.Id,
+            FullName = $"{user.FirstName} {user.LastName}",
+            Username = user.Username,
+            Roll = user.UserRole,
+            Status = user.IsActive
+        };
     }
 
     public void Activate(int id)
@@ -40,14 +49,30 @@ public class UserService : IUserService
         return _userRepo.GetAll();
     }
 
-    public List<User> GetAllActive()
+    public List<UserDto> GetAllActive()
     {
-        return _userRepo.GetAllActive();
+        var user =  _userRepo.GetAllActive();
+        return user.Select(x => new UserDto()
+        {
+            Id = x.Id,
+            FullName = $"{x.FirstName} {x.LastName}",
+            Username = x.Username,
+            Roll = x.UserRole,
+            Status = x.IsActive
+        }).ToList();
     }
 
-    public List<User> GetAllInActive()
+    public List<UserDto> GetAllInActive()
     {
-        return _userRepo.GetAllInActive();
+        var user =  _userRepo.GetAllInActive();
+        return user.Select(x => new UserDto()
+        {
+            Id = x.Id,
+            FullName = $"{x.FirstName} {x.LastName}",
+            Username = x.Username,
+            Roll = x.UserRole,
+            Status = x.IsActive
+        }).ToList();
     }
 
     public void Update(User user)

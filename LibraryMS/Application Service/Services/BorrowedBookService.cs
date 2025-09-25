@@ -1,4 +1,5 @@
-﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
+﻿using LibraryMS.Application_Service.DTOs;
+using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Contracts.Service_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Infrastructure.Repositories;
@@ -46,13 +47,26 @@ public class BorrowedBookService : IBorrowedBookService
         _borrowedBookRepository.Update(borrowToReturn);
     }
 
-    public List<BorrowedBook> GetMyBorrowHistory(int userId)
+    public List<BorrowedHistoryDto> GetMyBorrowHistory(int userId)
     {
-        return _borrowedBookRepository.GetBorrowHistoryByUserId(userId);
+        var borrowedHistory=  _borrowedBookRepository.GetBorrowHistoryByUserId(userId);
+        return borrowedHistory.Select(x => new BorrowedHistoryDto()
+        {
+            Name = x.Book.Title,
+            BorrowedDate = x.BorrowDate,
+            ReturnDate = x.ReturnDate
+        }).ToList();
     }
 
-    public List<BorrowedBook> GetMyActiveBorrows(int userId)
+    public List<BorrowBookDto> GetMyActiveBorrows(int userId)
     {
-        return _borrowedBookRepository.GetActiveBorrowsByUserId(userId);
+        var borrowedList =  _borrowedBookRepository.GetActiveBorrowsByUserId(userId);
+        return borrowedList.Select(x => new BorrowBookDto()
+        {
+            Id = x.BookId,
+            Title = x.Book.Title,
+            BorrowedDate = x.BorrowDate,
+            ReturnDate = x.ReturnDate
+        }).ToList();
     }
 }

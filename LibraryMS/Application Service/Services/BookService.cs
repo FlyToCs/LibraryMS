@@ -1,4 +1,5 @@
-﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
+﻿using LibraryMS.Application_Service.DTOs;
+using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Contracts.Service_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Infrastructure.Repositories;
@@ -23,19 +24,43 @@ public class BookService: IBookService
         return book;
     }
 
-    public List<Book> GetAll()
+    public List<BookDto> GetAll()
     {
-        return _bookRepository.GetAll();
+        var bookList =  _bookRepository.GetAll();
+        return bookList.Select(x => new BookDto()
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Description = x.Description,
+            Author = x.Author,
+            CategoryName = x.BookCategory.Name
+        }).ToList();
     }
 
-    public List<Book> GetBorrowedBooks()
+    public List<BookDto> GetBorrowedBooks()
     {
-        return _bookRepository.GetBorrowedBooks();
+        var bookList =  _bookRepository.GetBorrowedBooks();
+        return bookList.Select(x => new BookDto()
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Description = x.Description,
+            Author = x.Author,
+            CategoryName = x.BookCategory.Name
+        }).ToList();
     }
 
-    public List<Book> GetUnBorrowedBooks()
+    public List<BookDto> GetUnBorrowedBooks()
     {
-        return _bookRepository.GetUnBorrowedBooks();
+        var bookList  = _bookRepository.GetUnBorrowedBooks();
+        return bookList.Select(x => new BookDto()
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Description = x.Description,
+            Author = x.Author,
+            CategoryName = x.BookCategory.Name
+        }).ToList();
     }
 
     public void Update(Book book)
