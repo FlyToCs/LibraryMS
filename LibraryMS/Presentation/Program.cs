@@ -20,31 +20,31 @@ IReviewService reviewService = new ReviewService();
 
 
 
-// Console.WriteLine("نسخه 2.5.6 کتابخانه پشمک حاج عبدالاه".Reverse().ToArray());
-//
-// await AnsiConsole.Progress()
-//     .Columns(new ProgressColumn[]
-//     {
-//         new TaskDescriptionColumn(),
-//         new ProgressBarColumn(),
-//         new PercentageColumn(),
-//         new SpinnerColumn()
-//     })
-//     .StartAsync(async ctx =>
-//     {
-//         var dbTask = ctx.AddTask("[red]Connecting to database[/]");
-//         var appTask = ctx.AddTask("[yellow]Loading application[/]");
-//         var uiTask = ctx.AddTask("[green]Building UI[/]");
-//
-//         while (!ctx.IsFinished)
-//         {
-//             await Task.Delay(150);
-//
-//             dbTask.Increment(2.5);
-//             appTask.Increment(2);
-//             uiTask.Increment(3.0);
-//         }
-//     });
+Console.WriteLine("نسخه 2.5.6 کتابخانه پشمک حاج عبدالاه".Reverse().ToArray());
+
+await AnsiConsole.Progress()
+    .Columns(new ProgressColumn[]
+    {
+        new TaskDescriptionColumn(),
+        new ProgressBarColumn(),
+        new PercentageColumn(),
+        new SpinnerColumn()
+    })
+    .StartAsync(async ctx =>
+    {
+        var dbTask = ctx.AddTask("[red]Connecting to database[/]");
+        var appTask = ctx.AddTask("[yellow]Loading application[/]");
+        var uiTask = ctx.AddTask("[green]Building UI[/]");
+
+        while (!ctx.IsFinished)
+        {
+            await Task.Delay(150);
+
+            dbTask.Increment(2.5);
+            appTask.Increment(2);
+            uiTask.Increment(3.0);
+        }
+    });
 
 AnsiConsole.MarkupLine("[bold cyan]✔ Application started successfully![/]");
 Console.ReadKey();
@@ -73,76 +73,70 @@ void AuthenticationMenu()
             "2. Register",
             "3. Exit"
         });
-        Console.WriteLine("------------------");
 
         try
         {
             switch (select)
             {
                 case "1. Login":
-                    Console.Write("\nUsername: ");
-                    string userName = Console.ReadLine()!;
+                    {
+                        string userName = AnsiConsole.Ask<string>("\n[cyan]Username:[/] ");
 
-                    Console.Write("Password: ");
-                    string password = Console.ReadLine()!;
-                    currentUser = authenticationService.Login(userName, password);
+                        string password = AnsiConsole.Prompt(
+                            new TextPrompt<string>("[cyan]Password:[/] ")
+                                .PromptStyle("red")
+                                .Secret());
 
+                        currentUser = authenticationService.Login(userName, password);
 
-                    if (currentUser != null && currentUser.UserRole == UserRoleEnum.Member)
-                        MemberMenu();
+                        if (currentUser != null && currentUser.UserRole == UserRoleEnum.Member)
+                            MemberMenu();
+                        else
+                            AdminMenu();
 
-                    else
-                        AdminMenu();
-
-                    Console.ReadKey();
-
-                    break;
+                        break;
+                    }
 
                 case "2. Register":
-
-                    Console.Write("\nFirst Name: ");
-                    string newFirstName = Console.ReadLine()!;
-
-                    Console.Write("Last Name: ");
-                    string newLastName = Console.ReadLine()!;
-
-                    Console.Write("Username: ");
-                    string newUsername = Console.ReadLine()!;
-
-                    Console.Write("Password: ");
-                    string newPassword = Console.ReadLine()!;
-
-                    Console.Write("Email: ");
-                    string newEmail = Console.ReadLine()!;
-
-                    var roll = Prompt.Select("Select your roll", new[]
                     {
+                        string newFirstName = AnsiConsole.Ask<string>("\n[cyan]First Name:[/] ");
+                        string newLastName = AnsiConsole.Ask<string>("[cyan]Last Name:[/] ");
+                        string newUsername = AnsiConsole.Ask<string>("[cyan]Username:[/] ");
+
+                        string newPassword = AnsiConsole.Prompt(
+                            new TextPrompt<string>("[cyan]Password:[/] ")
+                                .PromptStyle("red")
+                                .Secret());
+
+                        string newEmail = AnsiConsole.Ask<string>("[cyan]Email:[/] ");
+
+                        var role = Prompt.Select("Select your role", new[]
+                        {
                         "Member",
                         "Admin"
                     });
-                    var newRoll = roll == "Member" ? UserRoleEnum.Member : UserRoleEnum.Admin;
+                        var newRole = role == "Member" ? UserRoleEnum.Member : UserRoleEnum.Admin;
 
+                        authenticationService.Register(newFirstName, newLastName, newUsername, newPassword, newEmail, newRole);
 
-                    authenticationService.Register(newFirstName, newLastName, newUsername, newPassword, newEmail, newRoll);
-
-
-                    Console.WriteLine("registration successfully");
-
-                    Console.ReadKey();
-                    break;
+                        AnsiConsole.MarkupLine("[green]✅ Registration successful![/]");
+                        break;
+                    }
 
                 case "3. Exit":
-                    Environment.Exit(-1);
+                    Environment.Exit(0);
                     break;
             }
         }
         catch (Exception e)
         {
             AnsiConsole.MarkupLine($"[bold red]❌ Error: {e.Message}[/]");
-            Console.ReadKey();
         }
+
+        Console.ReadKey();
     }
 }
+
 
 void MemberMenu()
 {
@@ -397,121 +391,121 @@ void MemberMenu()
 
 
                 case "7. Edit a Review":
-                {
-                    var myReviews = reviewService.GetMyReviews(currentUser.Id);
-
-                    if (myReviews == null || myReviews.Count == 0)
                     {
-                        AnsiConsole.MarkupLine("[red]📝 You have not written any reviews yet![/]");
-                    }
-                    else
-                    {
-                        var table = new Table()
-                            .Border(TableBorder.Rounded)
-                            .Title("[bold green]✍️ My Reviews[/]")
-                            .Expand();
+                        var myReviews = reviewService.GetMyReviews(currentUser.Id);
 
-                        table.AddColumn("[yellow]ID[/]");
-                        table.AddColumn("[cyan]Book[/]");
-                        table.AddColumn("[orange1]⭐ Rating[/]");
-                        table.AddColumn("[blue]Comment[/]");
-
-                        foreach (var review in myReviews)
+                        if (myReviews == null || myReviews.Count == 0)
                         {
-                            table.AddRow(
-                                review.Id.ToString(),
-                                review.BookName ?? "[grey]-[/]",
-                                $"[yellow]{review.Rating:F1}[/]",
-                                string.IsNullOrWhiteSpace(review.Comment)
-                                    ? "[grey]-[/]"
-                                    : review.Comment.Length > 40
-                                        ? review.Comment.Substring(0, 40) + "..."
-                                        : review.Comment
-                            );
+                            AnsiConsole.MarkupLine("[red]📝 You have not written any reviews yet![/]");
+                        }
+                        else
+                        {
+                            var table = new Table()
+                                .Border(TableBorder.Rounded)
+                                .Title("[bold green]✍️ My Reviews[/]")
+                                .Expand();
+
+                            table.AddColumn("[yellow]ID[/]");
+                            table.AddColumn("[cyan]Book[/]");
+                            table.AddColumn("[orange1]⭐ Rating[/]");
+                            table.AddColumn("[blue]Comment[/]");
+
+                            foreach (var review in myReviews)
+                            {
+                                table.AddRow(
+                                    review.Id.ToString(),
+                                    review.BookName ?? "[grey]-[/]",
+                                    $"[yellow]{review.Rating:F1}[/]",
+                                    string.IsNullOrWhiteSpace(review.Comment)
+                                        ? "[grey]-[/]"
+                                        : review.Comment.Length > 40
+                                            ? review.Comment.Substring(0, 40) + "..."
+                                            : review.Comment
+                                );
+                            }
+
+                            AnsiConsole.Write(table);
+
+                            Console.Write("Enter a review ID to edit: ");
+                            if (!int.TryParse(Console.ReadLine(), out int reviewId))
+                            {
+                                AnsiConsole.MarkupLine("[red]❌ Invalid review ID![/]");
+                                break;
+                            }
+
+                            int rating = Prompt.Select("Rate this Book", new[] { 1, 2, 3, 4, 5 });
+
+                            Console.Write("Write your comment: ");
+                            string comment = Console.ReadLine() ?? string.Empty;
+
+                            reviewService.Edit(reviewId, rating, comment, currentUser.Id);
+
+                            AnsiConsole.MarkupLine("[green]✅ Review updated successfully![/]");
                         }
 
-                        AnsiConsole.Write(table);
-
-                        Console.Write("Enter a review ID to edit: ");
-                        if (!int.TryParse(Console.ReadLine(), out int reviewId))
-                        {
-                            AnsiConsole.MarkupLine("[red]❌ Invalid review ID![/]");
-                            break;
-                        }
-
-                        int rating = Prompt.Select("Rate this Book", new[] { 1, 2, 3, 4, 5 });
-
-                        Console.Write("Write your comment: ");
-                        string comment = Console.ReadLine() ?? string.Empty;
-
-                        reviewService.Edit(reviewId, rating, comment, currentUser.Id);
-
-                        AnsiConsole.MarkupLine("[green]✅ Review updated successfully![/]");
+                        Console.ReadKey();
+                        break;
                     }
-
-                    Console.ReadKey();
-                    break;
-                }
 
 
 
                 case "8. Delete a Review":
-                {
-                    var myReviews = reviewService.GetMyReviews(currentUser.Id);
-
-                    if (myReviews == null || myReviews.Count == 0)
                     {
-                        AnsiConsole.MarkupLine("[red]📝 You have not written any reviews yet![/]");
+                        var myReviews = reviewService.GetMyReviews(currentUser.Id);
+
+                        if (myReviews == null || myReviews.Count == 0)
+                        {
+                            AnsiConsole.MarkupLine("[red]📝 You have not written any reviews yet![/]");
+                        }
+                        else
+                        {
+                            var table = new Table()
+                                .Border(TableBorder.Rounded)
+                                .Title("[bold red]❌ My Reviews (Delete)[/]")
+                                .Expand();
+
+                            table.AddColumn("[yellow]ID[/]");
+                            table.AddColumn("[cyan]Book[/]");
+                            table.AddColumn("[orange1]⭐ Rating[/]");
+                            table.AddColumn("[blue]Comment[/]");
+
+                            foreach (var review in myReviews)
+                            {
+                                table.AddRow(
+                                    review.Id.ToString(),
+                                    review.BookName ?? "[grey]-[/]",
+                                    $"[yellow]{review.Rating:F1}[/]",
+                                    string.IsNullOrWhiteSpace(review.Comment)
+                                        ? "[grey]-[/]"
+                                        : review.Comment.Length > 40
+                                            ? review.Comment.Substring(0, 40) + "..."
+                                            : review.Comment
+                                );
+                            }
+
+                            AnsiConsole.Write(table);
+
+                            Console.Write("Enter a review ID to delete: ");
+                            if (!int.TryParse(Console.ReadLine(), out int reviewId))
+                            {
+                                AnsiConsole.MarkupLine("[red]❌ Invalid review ID![/]");
+                                break;
+                            }
+
+                            var confirm = AnsiConsole.Confirm("[bold red]Are you sure you want to delete this review?[/]");
+                            if (!confirm)
+                            {
+                                AnsiConsole.MarkupLine("[yellow]⚠️ Deletion cancelled.[/]");
+                                break;
+                            }
+
+                            reviewService.Delete(reviewId, currentUser.Id);
+                            AnsiConsole.MarkupLine("[green]✅ Review deleted successfully![/]");
+                        }
+
+                        Console.ReadKey();
+                        break;
                     }
-                    else
-                    {
-                        var table = new Table()
-                            .Border(TableBorder.Rounded)
-                            .Title("[bold red]❌ My Reviews (Delete)[/]")
-                            .Expand();
-
-                        table.AddColumn("[yellow]ID[/]");
-                        table.AddColumn("[cyan]Book[/]");
-                        table.AddColumn("[orange1]⭐ Rating[/]");
-                        table.AddColumn("[blue]Comment[/]");
-
-                        foreach (var review in myReviews)
-                        {
-                            table.AddRow(
-                                review.Id.ToString(),
-                                review.BookName ?? "[grey]-[/]",
-                                $"[yellow]{review.Rating:F1}[/]",
-                                string.IsNullOrWhiteSpace(review.Comment)
-                                    ? "[grey]-[/]"
-                                    : review.Comment.Length > 40
-                                        ? review.Comment.Substring(0, 40) + "..."
-                                        : review.Comment
-                            );
-                        }
-
-                        AnsiConsole.Write(table);
-
-                        Console.Write("Enter a review ID to delete: ");
-                        if (!int.TryParse(Console.ReadLine(), out int reviewId))
-                        {
-                            AnsiConsole.MarkupLine("[red]❌ Invalid review ID![/]");
-                            break;
-                        }
-
-                        var confirm = AnsiConsole.Confirm("[bold red]Are you sure you want to delete this review?[/]");
-                        if (!confirm)
-                        {
-                            AnsiConsole.MarkupLine("[yellow]⚠️ Deletion cancelled.[/]");
-                            break;
-                        }
-
-                        reviewService.Delete(reviewId, currentUser.Id);
-                        AnsiConsole.MarkupLine("[green]✅ Review deleted successfully![/]");
-                    }
-
-                    Console.ReadKey();
-                    break;
-                }
 
 
                 case "9. Logout":
