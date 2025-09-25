@@ -16,13 +16,13 @@ public class Review
     public int BookId { get; set; }
     public Book Book{ get; set; }
 
-    public void AddReview(int userId, int bookId, int rating, string? comment)
+    public Review(int userId, int bookId, int rating, string? comment)
     {
         UserId = userId;
         BookId = bookId;
         Rating = rating;
         Comment = comment;
         CreatedAt = DateTime.Now;
-        Status = ReviewStatusEnum.Pending; 
+        Status = ReviewStatusEnum.Pending;
     }
 }

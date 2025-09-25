@@ -61,4 +61,22 @@ public class EfReviewRepository : IReviewRepository
             .Include(x => x.Book) 
             .ToList();
     }
+
+    public Review? GetByUserAndBook(int userId, int bookId)
+    {
+        using var context = new AppDbContext();
+        return context.Reviews.FirstOrDefault(r => r.UserId == userId && r.BookId == bookId);
+    }
+
+    public decimal GetAverageRatingForBook(int bookId)
+    {
+        using var context = new AppDbContext();
+        var approvedReviews = context.Reviews
+            .Where(r => r.BookId == bookId && r.Status == ReviewStatusEnum.Approved);
+
+        if (!approvedReviews.Any())
+            return 0;
+        
+        return approvedReviews.Average(r => (decimal)r.Rating);
+    }
 }

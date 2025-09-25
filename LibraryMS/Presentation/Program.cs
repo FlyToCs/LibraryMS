@@ -15,6 +15,7 @@ IBookService bookService = new BookService();
 IUserService userService = new UserService();
 IBookCategoryService bookCategoryService = new CategoryService();
 IBorrowedBookService borrowedBookService = new BorrowedBookService();
+IReviewService reviewService = new ReviewService();
 
 
 

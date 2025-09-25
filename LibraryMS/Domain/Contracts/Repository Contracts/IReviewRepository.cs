@@ -10,4 +10,6 @@ public interface IReviewRepository
     bool Delete(int id);
     List<Review> GetApprovedReviewsByBookId(int bookId);
     List<Review> GetPendingReviews();
+    Review? GetByUserAndBook(int userId, int bookId);
+    decimal GetAverageRatingForBook(int bookId);
 }
