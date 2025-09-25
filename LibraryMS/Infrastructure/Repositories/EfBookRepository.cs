@@ -20,6 +20,7 @@ public class EfBookRepository : IBookRepository
         return context.Books
             .Include(x => x.BookCategory)
             .Include(x => x.BorrowedBooks)
+            .Include(x=>x.Reviews)
             .ToList();
     }
 
@@ -28,6 +29,7 @@ public class EfBookRepository : IBookRepository
         using var context = new AppDbContext();
         return context.Books
             .Include(x => x.BookCategory)
+            .Include(b => b.Reviews)
             .Where(book => book.BorrowedBooks.Any(borrow => borrow.ReturnDate == null))
             .ToList();
     }
@@ -36,7 +38,9 @@ public class EfBookRepository : IBookRepository
         using var context = new AppDbContext();
         return context.Books
             .Include(x => x.BookCategory)
+            .Include(b => b.Reviews)
             .Where(book => book.BorrowedBooks.All(borrow => borrow.ReturnDate != null))
+            
             .ToList();
 
     }

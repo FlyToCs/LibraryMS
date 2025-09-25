@@ -1,4 +1,5 @@
-﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
+﻿using LibraryMS.Application_Service.DTOs;
+using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Contracts.Service_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Domain.Enums;
@@ -90,9 +91,18 @@ public class ReviewService : IReviewService
         _reviewRepository.Update(review);
     }
 
-    public List<Review> GetPendingReviews()
+    public List<ReviewDto> GetPendingReviews()
     {
-        return _reviewRepository.GetPendingReviews();
+        var reviews = _reviewRepository.GetPendingReviews();
+        return reviews.Select(x => new ReviewDto()
+        {
+            Id = x.Id,
+            FullName = $"{x.User.FirstName} {x.User.LastName}",
+            Comment = x.Comment,
+            Rating = x.Rating,
+            BookName = x.Book.Title
+        }).ToList();  
+
     }
 
     public List<Review> GetApprovedReviewsByBookId(int bookId)
@@ -103,5 +113,17 @@ public class ReviewService : IReviewService
     public decimal GetAverageRatingByBookId(int bookId)
     {
         return _reviewRepository.GetAverageRatingForBook(bookId);
+    }
+    public List<ReviewDto> GetMyReviews(int userId)
+    {
+        var reviews =  _reviewRepository.GetByUserId(userId);
+        return reviews.Select(x => new ReviewDto()
+        {
+            Id = x.Id,
+            FullName = $"{x.User.FirstName} {x.User.LastName}",
+            Comment = x.Comment,
+            Rating = x.Rating,
+            BookName = x.Book.Title
+        }).ToList();
     }
 }

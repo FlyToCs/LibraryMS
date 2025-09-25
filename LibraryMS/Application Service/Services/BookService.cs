@@ -9,6 +9,7 @@ namespace LibraryMS.Application_Service.Services;
 public class BookService: IBookService
 {
     private readonly IBookRepository _bookRepository = new EfBookRepository();
+    private readonly IReviewService _reviewService = new ReviewService();
     public int Add(string title, string description, string author, int categoryId)
     {
         var newBook = new Book(title, description, author,categoryId);
@@ -33,7 +34,8 @@ public class BookService: IBookService
             Title = x.Title,
             Description = x.Description,
             Author = x.Author,
-            CategoryName = x.BookCategory.Name
+            CategoryName = x.BookCategory.Name,
+            AvgScore = _reviewService.GetAverageRatingByBookId(x.Id)
         }).ToList();
     }
 
@@ -46,7 +48,8 @@ public class BookService: IBookService
             Title = x.Title,
             Description = x.Description,
             Author = x.Author,
-            CategoryName = x.BookCategory.Name
+            CategoryName = x.BookCategory.Name,
+            AvgScore = _reviewService.GetAverageRatingByBookId(x.Id)
         }).ToList();
     }
 
@@ -59,7 +62,8 @@ public class BookService: IBookService
             Title = x.Title,
             Description = x.Description,
             Author = x.Author,
-            CategoryName = x.BookCategory.Name
+            CategoryName = x.BookCategory.Name,
+            AvgScore = _reviewService.GetAverageRatingByBookId(x.Id)
         }).ToList();
     }
 

@@ -7,4 +7,6 @@ public class BookDto
     public string Description { get; set; }
     public string Author { get; set; }
     public string CategoryName { get; set; }
+    public decimal AvgScore { get; set; }
+
 }

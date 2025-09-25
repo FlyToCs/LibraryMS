@@ -12,4 +12,5 @@ public interface IReviewRepository
     List<Review> GetPendingReviews();
     Review? GetByUserAndBook(int userId, int bookId);
     decimal GetAverageRatingForBook(int bookId);
+    List<Review> GetByUserId(int userId);
 }

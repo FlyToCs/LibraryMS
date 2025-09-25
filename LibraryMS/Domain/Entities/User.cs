@@ -13,5 +13,6 @@ public class User
     public UserRoleEnum UserRole { get; set; }
     public bool IsActive { get; set; }
     public List<BorrowedBook> BorrowedBooks { get; set; } = [];
+    public List<Review> Reviews { get; set; } = [];
 
 }

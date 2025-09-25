@@ -79,4 +79,13 @@ public class EfReviewRepository : IReviewRepository
         
         return approvedReviews.Average(r => (decimal)r.Rating);
     }
+    public List<Review> GetByUserId(int userId)
+    {
+        using var context = new AppDbContext();
+        return context.Reviews
+            .Where(r => r.UserId == userId)
+            .Include(r => r.Book) 
+            .Include(x=>x.User)
+            .ToList();
+    }
 }

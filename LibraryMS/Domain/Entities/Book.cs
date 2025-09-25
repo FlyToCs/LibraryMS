@@ -12,6 +12,7 @@ public class Book
     public int BookCategoryId { get; set; }
 
     public List<BorrowedBook> BorrowedBooks { get; set; } = [];
+    public List<Review> Reviews { get; set; } = [];
 
     //ask it
     public Book(string title, string description, string author, int categoryId)
