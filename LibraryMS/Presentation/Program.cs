@@ -1,12 +1,9 @@
 ﻿using Figgle.Fonts;
 using LibraryMS.Application_Service.Services;
-using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Contracts.Service_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Domain.Enums;
 using LibraryMS.Framework;
-using LibraryMS.Infrastructure.Repositories;
-using Microsoft.Identity.Client.Extensions.Msal;
 using Sharprompt;
 using Spectre.Console;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -17,6 +14,7 @@ IAuthenticationService authenticationService = new AuthenticationService();
 IBookService bookService = new BookService();
 IUserService userService = new UserService();
 IBookCategoryService bookCategoryService = new CategoryService();
+IBorrowedBookService borrowedBookService = new BorrowedBookService();
 
 
 
@@ -160,7 +158,8 @@ void MemberMenu()
             "2. Show books based on categories",
             "3. Borrow a book",
             "4. Show my borrowed books",
-            "5. Logout"
+            "5. Return a book",
+            "6. Logout"
         });
 
 
@@ -179,13 +178,48 @@ void MemberMenu()
 
                 case "3. Borrow a book":
                     ConsolePainter.WriteTable(bookService.GetUnBorrowedBooks());
+                    Console.Write("Enter book ID to borrow: ");
+                    int bookIdToBorrow = int.Parse(Console.ReadLine()!);
+                    borrowedBookService.BorrowBook(currentUser.Id, bookIdToBorrow);
+                    ConsolePainter.GreenMessage("Book borrowed successfully!");
                     Console.ReadKey();
                     break;
 
                 case "4. Show my borrowed books":
+                    var  myBorrows = borrowedBookService.GetMyBorrowHistory(currentUser.Id);
+                    if (!myBorrows.Any())
+                    {
+                        Console.WriteLine("You have not borrowed any books.");
+                    }
+                    else
+                    {
+                        ConsolePainter.WriteTable(myBorrows);
+                    }
+                    Console.ReadKey();
                     break;
 
-                case "5. Logout":
+                case "5. Return a book":
+
+                    var myActiveBorrows = borrowedBookService.GetMyActiveBorrows(currentUser.Id);
+                    if (!myActiveBorrows.Any())
+                    {
+                        Console.WriteLine("You do not have any books to return at the moment.");
+                        Console.ReadKey();
+                        break; 
+                    }
+                    Console.WriteLine("--- Here are the books you are currently borrowing ---");
+                    foreach (var borrow in myActiveBorrows)
+                    {
+                        Console.WriteLine($"  ID: {borrow.Book.Id}, Title: {borrow.Book.Title}");
+                    }
+                    Console.Write("\nEnter the ID of the book you want to return: ");
+                    int bookIdToReturn = int.Parse(Console.ReadLine()!);
+                    borrowedBookService.ReturnBook(currentUser.Id, bookIdToReturn);
+                    ConsolePainter.GreenMessage("Book returned successfully!");
+                    Console.ReadKey();
+                    break;
+
+                case "6. Logout":
                     AuthenticationMenu();
                     break;
 
@@ -200,6 +234,9 @@ void MemberMenu()
 
     }
 }
+
+
+
 
 void AdminMenu()
 {

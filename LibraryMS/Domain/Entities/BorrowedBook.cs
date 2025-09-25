@@ -16,4 +16,15 @@ public class BorrowedBook
     public DateTime BorrowDate { get; set; }
     public DateTime? ReturnDate { get; set; }
 
+    public BorrowedBook()
+    {
+        
+    }
+
+    public BorrowedBook(int userId, int bookId)
+    {
+        UserId = userId;
+        BookId = bookId;
+        BorrowDate = DateTime.Now;
+    }
 }

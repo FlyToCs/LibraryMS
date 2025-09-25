@@ -11,4 +11,5 @@ public interface IBookCategoryService
     void Update(BookCategory bookCategory);
     void DeleteById(int id);
 
+
 }
