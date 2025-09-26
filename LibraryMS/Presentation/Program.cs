@@ -157,6 +157,7 @@ void MemberMenu()
             "6. Add a Review",
             "7. Edit a Review",
             "8. Delete a Review",
+            "9. Show reviews of a book",
             "9. Logout"
         });
 
@@ -506,6 +507,59 @@ void MemberMenu()
                         Console.ReadKey();
                         break;
                     }
+
+                case "9. Show reviews of a book":
+                {
+                   
+                    Console.Write("Enter the Book ID: ");
+                    if (!int.TryParse(Console.ReadLine(), out int bookId))
+                    {
+                        AnsiConsole.MarkupLine("[red]❌ Invalid Book ID![/]");
+                        Console.ReadKey();
+                        break;
+                    }
+
+                    
+                    var reviews = reviewService.GetApprovedReviewsByBookId(bookId);
+
+                    if (reviews == null || reviews.Count == 0)
+                    {
+                        AnsiConsole.MarkupLine("[red]📚 No reviews available for this book![/]");
+                    }
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]📖 Approved Reviews[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]User[/]");
+                        table.AddColumn("[blue]Rating[/]");
+                        table.AddColumn("[purple]Comment[/]");
+                        table.AddColumn("[grey]Date[/]");
+
+                        foreach (var review in reviews.OrderBy(r => r.CreatedAt)) 
+                        {
+                            table.AddRow(
+                                review.Id.ToString(),
+                                review.User.FirstName,  
+                                $"[yellow]{review.Rating}⭐[/]",
+                                string.IsNullOrWhiteSpace(review.Comment) ? "[grey]No comment[/]" : review.Comment.Length > 40
+                                    ? review.Comment.Substring(0, 40) + "..." 
+                                    : review.Comment,
+                                review.CreatedAt.ToString("yyyy/MM/dd HH:mm")  
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
+                    Console.ReadKey();
+                    break;
+                }
+
+
 
 
                 case "9. Logout":

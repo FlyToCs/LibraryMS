@@ -5,6 +5,7 @@ namespace LibraryMS.Infrastructure.Repositories;
 
 public class EfUserRepository : IUserRepository
 {
+
     public int Add(User user)
     {
         using var appDbContext = new AppDbContext();
@@ -22,7 +23,7 @@ public class EfUserRepository : IUserRepository
     public User? GetByUserName(string userName)
     {
         using var appDbContext = new AppDbContext();
-        return appDbContext.Users.SingleOrDefault(x => x.Username == userName);
+        return appDbContext.Users.FirstOrDefault(x => x.Username == userName);
     }
 
     public List<User> GetAll()
@@ -72,7 +73,7 @@ public class EfUserRepository : IUserRepository
     public void Update(User user)
     {
         using var appDbContext = new AppDbContext();
-        var findUser = appDbContext.Users.SingleOrDefault(x => x.Id == user.Id);
+        var findUser = appDbContext.Users.FirstOrDefault(x => x.Id == user.Id);
         if (findUser != null)
         {
             findUser.FirstName = user.FirstName;
