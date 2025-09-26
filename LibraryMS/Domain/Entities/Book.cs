@@ -13,6 +13,7 @@ public class Book
 
     public List<BorrowedBook> BorrowedBooks { get; set; } = [];
     public List<Review> Reviews { get; set; } = [];
+    public List<WishList> WishLists { get; set; } = [];
 
     //ask it
     public Book(string title, string description, string author, int categoryId)

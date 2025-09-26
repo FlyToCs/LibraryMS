@@ -44,15 +44,7 @@ public class EfBookRepository : IBookRepository
             .ToList();
 
     }
-    // public List<Book> GetUnBorrowedBooks()
-    // {
-    //     using var context = new AppDbContext();
-    //     return context.Books
-    //         .Include(x => x.BookCategory)
-    //         .Include(x => x.BorrowedBooks)
-    //         .Where(x => x.IsBorrow == false)
-    //         .ToList();
-    // }
+
 
     public Book? GetById(int id)
     {
@@ -80,7 +72,7 @@ public class EfBookRepository : IBookRepository
     public void Delete(int id)
     {
         using var context = new AppDbContext();
-        var existBook = context.Books.Find(id);
+        var existBook = context.Books.FirstOrDefault(x=>x.Id == id);
         if (existBook != null)
         {
             context.Books.Remove(existBook);
