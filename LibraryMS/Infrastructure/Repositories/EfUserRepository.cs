@@ -17,7 +17,7 @@ public class EfUserRepository : IUserRepository
     public User? GetById(int id)
     {
         using var appDbContext = new AppDbContext();
-        return appDbContext.Users.Find(id);
+        return appDbContext.Users.FirstOrDefault(x => x.Id == id);
     }
 
     public User? GetByUserName(string userName)
@@ -47,7 +47,7 @@ public class EfUserRepository : IUserRepository
     public bool Activate(int id)
     {
         using var appDbContext = new AppDbContext();
-        var user = appDbContext.Users.Find(id);
+        var user = appDbContext.Users.FirstOrDefault(x => x.Id == id);
         if (user != null)
         {
             user.IsActive = true;
@@ -60,7 +60,7 @@ public class EfUserRepository : IUserRepository
     public bool DeActivate(int id)
     {
         using var appDbContext = new AppDbContext();
-        var user = appDbContext.Users.Find(id);
+        var user = appDbContext.Users.FirstOrDefault(x => x.Id == id);
         if (user != null)
         {
             user.IsActive = false;
@@ -87,7 +87,7 @@ public class EfUserRepository : IUserRepository
     public void Delete(int id)
     {
         using var appDbContext = new AppDbContext();
-        var user = appDbContext.Users.Find(id);
+        var user = appDbContext.Users.FirstOrDefault(x=>x.Id == id);
         if (user != null)
         {
             appDbContext.Users.Remove(user);

@@ -20,7 +20,7 @@ public class EfReviewRepository : IReviewRepository
     public Review? GetById(int id)
     {
         using var context = new AppDbContext();
-        return context.Reviews.Find(id);
+        return context.Reviews.FirstOrDefault(x => x.Id == id);
     }
 
     public void Update(Review review) 
@@ -32,7 +32,7 @@ public class EfReviewRepository : IReviewRepository
     public bool Delete(int id)
     {
         using var context = new AppDbContext();
-        var review = context.Reviews.Find(id);
+        var review = context.Reviews.FirstOrDefault(x => x.Id == id);
         if (review != null)
         {
             context.Reviews.Remove(review);

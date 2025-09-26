@@ -66,7 +66,7 @@ public class EfBookRepository : IBookRepository
     public void Update(Book book)
     {
         using var context = new AppDbContext();
-        var existBook = context.Books.Find(book.Id);
+        var existBook = context.Books.FirstOrDefault(x => x.Id == book.Id);
         if (existBook != null)
         {
             existBook.Author = book.Author;

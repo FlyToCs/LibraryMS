@@ -35,7 +35,7 @@ public class EfBookCategoryRepository : IBookCategoryRepository
     public bool Delete(int id)
     {
         using var context = new AppDbContext();
-        var bookCategory = context.BookCategories.Find(id);
+        var bookCategory = context.BookCategories.FirstOrDefault(x => x.Id == id);
         if (bookCategory != null)
         {
             context.BookCategories.Remove(bookCategory);
@@ -48,7 +48,7 @@ public class EfBookCategoryRepository : IBookCategoryRepository
     public bool Update(BookCategory bookCategory)
     {
         using var context = new AppDbContext();
-        var oldBookCategory = context.BookCategories.Find(bookCategory.Id);
+        var oldBookCategory = context.BookCategories.FirstOrDefault(x => x.Id == bookCategory.Id);
         if (oldBookCategory != null)
         {
             oldBookCategory.Name = bookCategory.Name;
@@ -61,7 +61,7 @@ public class EfBookCategoryRepository : IBookCategoryRepository
     public bool UpdateBookCategoryName(int id, string name)
     {
         using var context = new AppDbContext();
-        var oldBookCategory = context.BookCategories.Find(id);
+        var oldBookCategory = context.BookCategories.FirstOrDefault(x => x.Id == id);
         if (oldBookCategory != null)
         {
             oldBookCategory.Name = name;
