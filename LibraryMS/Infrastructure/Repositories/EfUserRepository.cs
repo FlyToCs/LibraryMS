@@ -86,6 +86,7 @@ public class EfUserRepository : IUserRepository
             findUser.LastName = user.LastName;
             findUser.Email = user.Email;
             findUser.IsActive = user.IsActive;
+            findUser.PenaltyAmount = user.PenaltyAmount;
             appDbContext.SaveChanges();
         }
     }

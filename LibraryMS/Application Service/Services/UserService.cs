@@ -30,7 +30,9 @@ public class UserService : IUserService
             FullName = $"{user.FirstName} {user.LastName}",
             Username = user.Username,
             Roll = user.UserRole,
-            Status = user.IsActive
+            Status = user.IsActive,
+            PenaltyAmount = user.PenaltyAmount
+            
         };
     }
 

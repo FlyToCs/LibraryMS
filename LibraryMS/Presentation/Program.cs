@@ -6,6 +6,7 @@ using LibraryMS.Domain.Enums;
 using LibraryMS.Framework;
 using Sharprompt;
 using Spectre.Console;
+using System.Collections.Generic;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 
@@ -16,6 +17,7 @@ IUserService userService = new UserService();
 IBookCategoryService bookCategoryService = new CategoryService();
 IBorrowedBookService borrowedBookService = new BorrowedBookService();
 IReviewService reviewService = new ReviewService();
+IWishListService wishListService = new WishListService();
 
 
 
@@ -48,6 +50,9 @@ await AnsiConsole.Progress()
 
 AnsiConsole.MarkupLine("[bold cyan]✔ Application started successfully![/]");
 Console.ReadKey();
+
+
+
 User? currentUser = null!;
 AuthenticationMenu();
 
@@ -138,6 +143,7 @@ void AuthenticationMenu()
 }
 
 
+
 void MemberMenu()
 {
     while (true)
@@ -146,7 +152,7 @@ void MemberMenu()
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine(FiggleFonts.Standard.Render("Member Panel"));
         Console.ResetColor();
-        Console.WriteLine($"\n\n PenaltyAmount: {currentUser.PenaltyAmount} Tomans\n\n");
+        Console.WriteLine($"\n\n PenaltyAmount: {userService.GetById(currentUser.Id).PenaltyAmount} Tomans\n\n");
 
         var select = Prompt.Select("Select an option", new[]
         {
@@ -159,7 +165,8 @@ void MemberMenu()
             "7. Edit a Review",
             "8. Delete a Review",
             "9. Show reviews of a book",
-            "9. Logout"
+            "10. WishList",
+            "11. Logout"
         });
 
 
@@ -510,60 +517,62 @@ void MemberMenu()
                     }
 
                 case "9. Show reviews of a book":
-                {
-                   
-                    Console.Write("Enter the Book ID: ");
-                    if (!int.TryParse(Console.ReadLine(), out int bookId))
                     {
-                        AnsiConsole.MarkupLine("[red]❌ Invalid Book ID![/]");
+
+                        Console.Write("Enter the Book ID: ");
+                        if (!int.TryParse(Console.ReadLine(), out int bookId))
+                        {
+                            AnsiConsole.MarkupLine("[red]❌ Invalid Book ID![/]");
+                            Console.ReadKey();
+                            break;
+                        }
+
+
+                        var reviews = reviewService.GetApprovedReviewsByBookId(bookId);
+
+                        if (reviews == null || reviews.Count == 0)
+                        {
+                            AnsiConsole.MarkupLine("[red]📚 No reviews available for this book![/]");
+                        }
+                        else
+                        {
+                            var table = new Table()
+                                .Border(TableBorder.Rounded)
+                                .Title("[bold green]📖 Approved Reviews[/]")
+                                .Expand();
+
+                            table.AddColumn("[yellow]ID[/]");
+                            table.AddColumn("[cyan]User[/]");
+                            table.AddColumn("[blue]Rating[/]");
+                            table.AddColumn("[purple]Comment[/]");
+                            table.AddColumn("[grey]Date[/]");
+
+                            foreach (var review in reviews.OrderBy(r => r.CreatedAt))
+                            {
+                                table.AddRow(
+                                    review.Id.ToString(),
+                                    review.User.FirstName,
+                                    $"[yellow]{review.Rating}⭐[/]",
+                                    string.IsNullOrWhiteSpace(review.Comment) ? "[grey]No comment[/]" : review.Comment.Length > 40
+                                        ? review.Comment.Substring(0, 40) + "..."
+                                        : review.Comment,
+                                    review.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                                );
+                            }
+
+                            AnsiConsole.Write(table);
+                        }
+
                         Console.ReadKey();
                         break;
                     }
 
-                    
-                    var reviews = reviewService.GetApprovedReviewsByBookId(bookId);
-
-                    if (reviews == null || reviews.Count == 0)
-                    {
-                        AnsiConsole.MarkupLine("[red]📚 No reviews available for this book![/]");
-                    }
-                    else
-                    {
-                        var table = new Table()
-                            .Border(TableBorder.Rounded)
-                            .Title("[bold green]📖 Approved Reviews[/]")
-                            .Expand();
-
-                        table.AddColumn("[yellow]ID[/]");
-                        table.AddColumn("[cyan]User[/]");
-                        table.AddColumn("[blue]Rating[/]");
-                        table.AddColumn("[purple]Comment[/]");
-                        table.AddColumn("[grey]Date[/]");
-
-                        foreach (var review in reviews.OrderBy(r => r.CreatedAt)) 
-                        {
-                            table.AddRow(
-                                review.Id.ToString(),
-                                review.User.FirstName,  
-                                $"[yellow]{review.Rating}⭐[/]",
-                                string.IsNullOrWhiteSpace(review.Comment) ? "[grey]No comment[/]" : review.Comment.Length > 40
-                                    ? review.Comment.Substring(0, 40) + "..." 
-                                    : review.Comment,
-                                review.CreatedAt.ToString("yyyy/MM/dd HH:mm")  
-                            );
-                        }
-
-                        AnsiConsole.Write(table);
-                    }
-
-                    Console.ReadKey();
+                case "10. WishList":
+                    WishListMenu();
                     break;
-                }
 
 
-
-
-                case "9. Logout":
+                case "11. Logout":
                     AuthenticationMenu();
                     break;
 
@@ -577,6 +586,167 @@ void MemberMenu()
         }
 
     }
+}
+
+
+void WishListMenu()
+{
+
+    while (true)
+    {
+
+        try
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(FiggleFonts.Standard.Render("WishList"));
+            Console.ResetColor();
+
+            var select = Prompt.Select("Select an option", new[]
+            {
+                "1. Show Wishlist",
+                "2. Add a book To Wishlist",
+                "3. Delete a book from Wishlist",
+                "4. Back to main menu"
+            });
+
+            switch (select)
+            {
+
+                case "1. Show Wishlist":
+                    {
+                        var wishList = wishListService.GetAllByUserId(currentUser.Id);
+
+                        if (wishList == null || !wishList.Any())
+                        {
+                            AnsiConsole.MarkupLine("[red]Your wishlist is empty.[/]");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                        var table = new Table();
+                        table.Border = TableBorder.Rounded;
+                        table.AddColumn("[yellow]Id[/]");
+                        table.AddColumn("[yellow]Book Name[/]");
+
+                        foreach (var item in wishList)
+                        {
+                            table.AddRow(
+                                item.Id.ToString(),
+                                item.BookName
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                        Console.ReadKey();
+                        break;
+                    }
+
+
+                case "2. Add a book To Wishlist":
+                    {
+                        var books = bookService.GetAll();
+
+                        if (books == null || !books.Any())
+                        {
+                            AnsiConsole.MarkupLine("[red]No books available to add to wishlist.[/]");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                        var table = new Table();
+                        table.Border = TableBorder.Rounded;
+                        table.AddColumn("[yellow]Id[/]");
+                        table.AddColumn("[yellow]Title[/]");
+                        table.AddColumn("[yellow]Author[/]");
+                        table.AddColumn("[yellow]Category[/]");
+                        table.AddColumn("[yellow]Avg Score[/]");
+
+                        foreach (var book in books)
+                        {
+                            table.AddRow(
+                                book.Id.ToString(),
+                                book.Title,
+                                book.Author,
+                                book.CategoryName,
+                                book.AvgScore.ToString("0.0")
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+
+                        Console.Write("Enter an Id to add: ");
+                        int wishId = int.Parse(Console.ReadLine()!);
+                        wishListService.Add(currentUser.Id, wishId);
+                        AnsiConsole.MarkupLine("[green]Book added to wishlist![/]");
+                        Console.ReadKey();
+                        break;
+                    }
+
+
+
+                case "3. Delete a book from Wishlist":
+                    {
+                        var wishList = wishListService.GetAllByUserId(currentUser.Id);
+
+                        if (wishList == null || !wishList.Any())
+                        {
+                            AnsiConsole.MarkupLine("[red]Your wishlist is empty.[/]");
+
+                            Console.ReadKey();
+                            break;
+                        }
+
+
+                        var table = new Table();
+                        table.Border = TableBorder.Rounded;
+                        table.AddColumn("[yellow]Id[/]");
+                        table.AddColumn("[yellow]Book Name[/]");
+
+                        foreach (var item in wishList)
+                        {
+                            table.AddRow(
+                                item.Id.ToString(),
+                                item.BookName
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+
+                        Console.Write("\nEnter an Id to delete: ");
+                        
+                        if (int.TryParse(Console.ReadLine(), out int wishId))
+                        {
+                            wishListService.Delete(wishId);
+                            AnsiConsole.MarkupLine("[green]Book removed from wishlist successfully![/]");
+                            
+                        }
+                        else
+                        {
+                            AnsiConsole.MarkupLine("[red]Invalid Id entered![/]");
+                        }
+
+                        Console.ReadKey();
+                        break;
+                    }
+
+
+
+                case "4. Back to main menu":
+                    MemberMenu();
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.ReadKey();
+        }
+
+    }
+
+
+
 }
 
 
@@ -601,7 +771,7 @@ void AdminMenu()
             "6. Show all books",
             "7. Show all categories",
             "8. Status Reviews",
-            "9. UserList has PenaltyAmount",
+            "9. User List with Penalty Amount",
             "0. Logout"
         });
 
@@ -904,53 +1074,53 @@ void AdminMenu()
                                 AnsiConsole.MarkupLine("[red]❌ Invalid review ID[/]");
                             }
                         }
-                        
+
 
                         Console.ReadKey();
                         break;
                     }
                 case "9. User List with Penalty Amount":
-                {
-                    var usersWithPenalty = userService.GetUserHasPenaltyAmount();
-
-                    if (usersWithPenalty == null || !usersWithPenalty.Any())
                     {
-                        AnsiConsole.MarkupLine("[red]❌ No users with penalties found![/]");
-                    }
-                    else
-                    {
-                        var table = new Table()
-                            .Border(TableBorder.Rounded)
-                            .Title("[bold green]👥 Users with Penalties[/]")
-                            .Expand();
+                        var usersWithPenalty = userService.GetUserHasPenaltyAmount();
 
-                        table.AddColumn("[yellow]ID[/]");
-                        table.AddColumn("[cyan]Full Name[/]");
-                        table.AddColumn("[blue]Username[/]");
-                        table.AddColumn("[magenta]Role[/]");
-                        table.AddColumn("[red]Penalty Amount[/]");
-                        table.AddColumn("[green]Status[/]");
-
-                        foreach (var user in usersWithPenalty)
+                        if (usersWithPenalty == null || !usersWithPenalty.Any())
                         {
-                            table.AddRow(
-                                user.Id.ToString(),
-                                user.FullName,
-                                user.Username,
-                                user.Roll.ToString(),
-                                user.PenaltyAmount > 0
-                                    ? $"[bold red]{user.PenaltyAmount}[/]"
-                                    : "[grey]No Penalty[/]",
-                                user.Status ? "[green]Active[/]" : "[red]Inactive[/]"
-                            );
+                            AnsiConsole.MarkupLine("[red]❌ No users with penalties found![/]");
+                        }
+                        else
+                        {
+                            var table = new Table()
+                                .Border(TableBorder.Rounded)
+                                .Title("[bold green]👥 Users with Penalties[/]")
+                                .Expand();
+
+                            table.AddColumn("[yellow]ID[/]");
+                            table.AddColumn("[cyan]Full Name[/]");
+                            table.AddColumn("[blue]Username[/]");
+                            table.AddColumn("[magenta]Role[/]");
+                            table.AddColumn("[red]Penalty Amount[/]");
+                            table.AddColumn("[green]Status[/]");
+
+                            foreach (var user in usersWithPenalty)
+                            {
+                                table.AddRow(
+                                    user.Id.ToString(),
+                                    user.FullName,
+                                    user.Username,
+                                    user.Roll.ToString(),
+                                    user.PenaltyAmount > 0
+                                        ? $"[bold red]{user.PenaltyAmount}[/]"
+                                        : "[grey]No Penalty[/]",
+                                    user.Status ? "[green]Active[/]" : "[red]Inactive[/]"
+                                );
+                            }
+
+                            AnsiConsole.Write(table);
                         }
 
-                        AnsiConsole.Write(table);
+                        Console.ReadKey();
+                        break;
                     }
-
-                    Console.ReadKey();
-                    break;
-                }
 
 
                 case "0. Logout":

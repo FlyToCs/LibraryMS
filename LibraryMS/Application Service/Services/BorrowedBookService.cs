@@ -50,7 +50,7 @@ public class BorrowedBookService : IBorrowedBookService
         {
             var overdueDays = borrowDuration.TotalDays - 7;
             var penaltyDays = (int)Math.Ceiling(overdueDays);
-            decimal penaltyAmount = penaltyDays * 100000; 
+            decimal penaltyAmount = penaltyDays * 10_0000; 
 
             var user = _userRepository.GetById(userId);
             if (user != null)

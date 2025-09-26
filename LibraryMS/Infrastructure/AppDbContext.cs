@@ -128,4 +128,5 @@ public class AppDbContext : DbContext
     public DbSet<BorrowedBook> BorrowedBooks { get; set; }
     public DbSet<BookCategory> BookCategories { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<WishList> WishLists { get; set; }
 }
