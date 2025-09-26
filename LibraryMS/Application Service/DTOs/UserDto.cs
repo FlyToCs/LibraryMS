@@ -10,4 +10,5 @@ public class UserDto
     public string Password { get; set; }
     public UserRoleEnum Roll { get; set; }
     public bool Status { get; set; }
+    public int PenaltyAmount { get; set; }
 }

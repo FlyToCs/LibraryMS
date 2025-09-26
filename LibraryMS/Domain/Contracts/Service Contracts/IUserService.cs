@@ -12,6 +12,7 @@ public interface IUserService
     List<User> GetAll();
     List<UserDto> GetAllActive();
     List<UserDto> GetAllInActive();
+    List<UserDto> GetUserHasPenaltyAmount();
     void Update(User user);
     void Delete(int id);
 }

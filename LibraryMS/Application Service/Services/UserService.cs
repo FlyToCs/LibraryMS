@@ -75,6 +75,19 @@ public class UserService : IUserService
         }).ToList();
     }
 
+    public List<UserDto> GetUserHasPenaltyAmount()
+    {
+        var user =  _userRepo.GetUserHasPenaltyAmount();
+        return user.Select(x=>new UserDto()
+        {
+            Id = x.Id,
+            FullName = $"{x.FirstName} {x.LastName}",
+            Username = x.Username,
+            Roll = x.UserRole,
+            Status = x.IsActive
+        }).ToList();
+    }
+
     public void Update(User user)
     {
         var existing = _userRepo.GetById(user.Id);

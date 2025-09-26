@@ -146,6 +146,7 @@ void MemberMenu()
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine(FiggleFonts.Standard.Render("Member Panel"));
         Console.ResetColor();
+        Console.WriteLine($"\n\n PenaltyAmount: {currentUser.PenaltyAmount} Tomans\n\n");
 
         var select = Prompt.Select("Select an option", new[]
         {
@@ -600,7 +601,8 @@ void AdminMenu()
             "6. Show all books",
             "7. Show all categories",
             "8. Status Reviews",
-            "9. Logout"
+            "9. UserList has PenaltyAmount",
+            "0. Logout"
         });
 
         try
@@ -902,10 +904,58 @@ void AdminMenu()
                                 AnsiConsole.MarkupLine("[red]❌ Invalid review ID[/]");
                             }
                         }
+                        
 
                         Console.ReadKey();
                         break;
                     }
+                case "9. User List with Penalty Amount":
+                {
+                    var usersWithPenalty = userService.GetUserHasPenaltyAmount();
+
+                    if (usersWithPenalty == null || !usersWithPenalty.Any())
+                    {
+                        AnsiConsole.MarkupLine("[red]❌ No users with penalties found![/]");
+                    }
+                    else
+                    {
+                        var table = new Table()
+                            .Border(TableBorder.Rounded)
+                            .Title("[bold green]👥 Users with Penalties[/]")
+                            .Expand();
+
+                        table.AddColumn("[yellow]ID[/]");
+                        table.AddColumn("[cyan]Full Name[/]");
+                        table.AddColumn("[blue]Username[/]");
+                        table.AddColumn("[magenta]Role[/]");
+                        table.AddColumn("[red]Penalty Amount[/]");
+                        table.AddColumn("[green]Status[/]");
+
+                        foreach (var user in usersWithPenalty)
+                        {
+                            table.AddRow(
+                                user.Id.ToString(),
+                                user.FullName,
+                                user.Username,
+                                user.Roll.ToString(),
+                                user.PenaltyAmount > 0
+                                    ? $"[bold red]{user.PenaltyAmount}[/]"
+                                    : "[grey]No Penalty[/]",
+                                user.Status ? "[green]Active[/]" : "[red]Inactive[/]"
+                            );
+                        }
+
+                        AnsiConsole.Write(table);
+                    }
+
+                    Console.ReadKey();
+                    break;
+                }
+
+
+                case "0. Logout":
+                    AuthenticationMenu();
+                    break;
             }
 
         }

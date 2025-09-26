@@ -44,6 +44,12 @@ public class EfUserRepository : IUserRepository
         return appDbContext.Users.Where(x => x.IsActive == false).ToList();
     }
 
+    public List<User> GetUserHasPenaltyAmount()
+    {
+        using var appDbContext = new AppDbContext();
+        return appDbContext.Users.Where(x => x.PenaltyAmount > 0).ToList();
+    }
+
     public bool Activate(int id)
     {
         using var appDbContext = new AppDbContext();

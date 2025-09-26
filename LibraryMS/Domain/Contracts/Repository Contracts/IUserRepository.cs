@@ -10,6 +10,7 @@ public interface IUserRepository
     List<User> GetAll();
     List<User> GetAllActive();
     List<User> GetAllInActive();
+    List<User> GetUserHasPenaltyAmount();
     bool Activate(int id);
     bool DeActivate(int id);
     void Update(User user);

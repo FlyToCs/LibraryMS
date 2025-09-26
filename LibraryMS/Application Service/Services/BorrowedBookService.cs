@@ -29,8 +29,9 @@ public class BorrowedBookService : IBorrowedBookService
         }
 
 
-        var newBorrow = new BorrowedBook(userId, bookId);
 
+
+        var newBorrow = new BorrowedBook(userId, bookId);
         _borrowedBookRepository.Add(newBorrow);
     }
 
@@ -44,6 +45,20 @@ public class BorrowedBookService : IBorrowedBookService
         }
         borrowToReturn.ReturnDate = DateTime.Now;
 
+        var borrowDuration = borrowToReturn.ReturnDate.Value - borrowToReturn.BorrowDate;
+        if (borrowDuration.TotalDays > 7)
+        {
+            var overdueDays = borrowDuration.TotalDays - 7;
+            var penaltyDays = (int)Math.Ceiling(overdueDays);
+            decimal penaltyAmount = penaltyDays * 100000; 
+
+            var user = _userRepository.GetById(userId);
+            if (user != null)
+            {
+                user.PenaltyAmount += penaltyAmount;
+                _userRepository.Update(user); 
+            }
+        }
         _borrowedBookRepository.Update(borrowToReturn);
     }
 
