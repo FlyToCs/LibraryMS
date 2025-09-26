@@ -11,7 +11,7 @@ public class AuthenticationService : IAuthenticationService
 
     public User Register(string firstName, string lastName, string username, string password, string email, UserRoleEnum roll)
     {
-        var existUser = _userService.GetAll().FirstOrDefault(x => x.Username == username);
+        var existUser = _userService.GetAll().FirstOrDefault(x => x.Username.ToLower() == username.ToLower());
         if (existUser != null)
         {
             throw new Exception("Username already exists");
