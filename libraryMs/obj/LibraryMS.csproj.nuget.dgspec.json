@@ -71,6 +71,10 @@
               "target": "Package",
               "version": "[9.0.9, )"
             },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
             "Sharprompt": {
               "target": "Package",
               "version": "[3.0.0, )"

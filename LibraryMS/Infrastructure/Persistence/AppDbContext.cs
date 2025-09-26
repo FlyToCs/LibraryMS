@@ -1,6 +1,7 @@
 ﻿using LibraryMS.Domain.Entities;
 using LibraryMS.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace LibraryMS.Infrastructure.Persistence;
 
@@ -8,7 +9,12 @@ public class AppDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=LibraryMS;User ID=sa; Password=123456;Trust Server Certificate=True");
+        var configurationBuilder = new ConfigurationBuilder();
+        var config = configurationBuilder.AddJsonFile("appsettings.json").Build();
+        var configSection = config.GetSection("ConnectionStrings");
+        var connectionString = configSection["DbConnection"];
+        optionsBuilder.UseSqlServer(connectionString);
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
