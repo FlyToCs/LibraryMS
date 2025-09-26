@@ -1,11 +1,12 @@
 ﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Domain.Enums;
+using LibraryMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryMS.Infrastructure.Repositories;
 
-public class EfReviewRepository : IReviewRepository
+public class ReviewRepository : IReviewRepository
 {
 
     public int Add(Review review)

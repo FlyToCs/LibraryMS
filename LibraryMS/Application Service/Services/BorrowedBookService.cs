@@ -8,9 +8,9 @@ namespace LibraryMS.Application_Service.Services;
 
 public class BorrowedBookService : IBorrowedBookService
 {
-    private readonly IBorrowedBookRepository _borrowedBookRepository = new EfBorrowedBookRepository();
-    private readonly IBookRepository _bookRepository = new EfBookRepository();
-    private readonly IUserRepository _userRepository = new EfUserRepository();
+    private readonly IBorrowedBookRepository _borrowedBookRepository = new BorrowedBookRepository();
+    private readonly IBookRepository _bookRepository = new BookRepository();
+    private readonly IUserRepository _userRepository = new UserRepository();
 
 
     public void BorrowBook(int userId, int bookId)

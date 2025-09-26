@@ -1,5 +1,6 @@
 ﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Entities;
+using LibraryMS.Infrastructure.Persistence;
 
 namespace LibraryMS.Infrastructure.Repositories;
 

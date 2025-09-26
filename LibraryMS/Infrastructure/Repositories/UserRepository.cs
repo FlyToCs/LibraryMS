@@ -1,9 +1,10 @@
 ﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Entities;
+using LibraryMS.Infrastructure.Persistence;
 
 namespace LibraryMS.Infrastructure.Repositories;
 
-public class EfUserRepository : IUserRepository
+public class UserRepository : IUserRepository
 {
 
     public int Add(User user)

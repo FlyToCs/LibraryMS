@@ -1,10 +1,11 @@
 ﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Entities;
+using LibraryMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryMS.Infrastructure.Repositories;
 
-public class EfBookRepository : IBookRepository
+public class BookRepository : IBookRepository
 {
     public int Add(Book book)
     {

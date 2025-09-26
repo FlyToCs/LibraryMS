@@ -9,9 +9,9 @@ namespace LibraryMS.Application_Service.Services;
 
 public class ReviewService : IReviewService
 {
-    private readonly IReviewRepository _reviewRepository = new EfReviewRepository();
-    private readonly IUserRepository _userRepository = new EfUserRepository();
-    private readonly IBookRepository _bookRepository = new EfBookRepository();
+    private readonly IReviewRepository _reviewRepository = new ReviewRepository();
+    private readonly IUserRepository _userRepository = new UserRepository();
+    private readonly IBookRepository _bookRepository = new BookRepository();
     public void Add(int userId, int bookId, int rating, string? comment)
     {
         var user = _userRepository.GetById(userId);

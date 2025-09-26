@@ -8,7 +8,7 @@ namespace LibraryMS.Application_Service.Services;
 
 public class BookService: IBookService
 {
-    private readonly IBookRepository _bookRepository = new EfBookRepository();
+    private readonly IBookRepository _bookRepository = new BookRepository();
     private readonly IReviewService _reviewService = new ReviewService();
     public int Add(string title, string description, string author, int categoryId)
     {

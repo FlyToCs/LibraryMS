@@ -2,7 +2,7 @@
 using LibraryMS.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibraryMS.Infrastructure;
+namespace LibraryMS.Infrastructure.Persistence;
 
 public class AppDbContext : DbContext
 {

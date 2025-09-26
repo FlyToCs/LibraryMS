@@ -8,7 +8,7 @@ namespace LibraryMS.Application_Service.Services;
 
 public class WishListService : IWishListService
 {
-    private readonly IWishListRepository _wishListRepository= new EfWishListRepository();
+    private readonly IWishListRepository _wishListRepository= new WishListRepository();
     private readonly IUserService _userService = new UserService();
     private readonly IBookService _bookService = new BookService();
     public int Add(int userId, int bookId)

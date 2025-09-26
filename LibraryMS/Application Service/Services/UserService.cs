@@ -10,7 +10,7 @@ namespace LibraryMS.Application_Service.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepo = new EfUserRepository();
+    private readonly IUserRepository _userRepo = new UserRepository();
     public int Add(User user)
     {
         if (string.IsNullOrWhiteSpace(user.Username))

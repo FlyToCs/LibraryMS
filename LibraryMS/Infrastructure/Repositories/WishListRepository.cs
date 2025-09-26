@@ -1,10 +1,11 @@
 ﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Entities;
+using LibraryMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryMS.Infrastructure.Repositories;
 
-public class EfWishListRepository : IWishListRepository
+public class WishListRepository : IWishListRepository
 {
     public int Add(WishList wishList)
     {

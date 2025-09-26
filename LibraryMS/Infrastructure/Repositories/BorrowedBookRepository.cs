@@ -1,10 +1,11 @@
 ﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Entities;
+using LibraryMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryMS.Infrastructure.Repositories;
 
-public class EfBorrowedBookRepository : IBorrowedBookRepository
+public class BorrowedBookRepository : IBorrowedBookRepository
 {
     public void Add(BorrowedBook borrowedBook)
     {
