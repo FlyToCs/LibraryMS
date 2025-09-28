@@ -1,4 +1,5 @@
-﻿using LibraryMS.Domain.Contracts.Service_Contracts;
+﻿using LibraryMS.Application_Service.DTOs;
+using LibraryMS.Domain.Contracts.Service_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Domain.Enums;
 using LibraryMS.Domain.Exceptions;
@@ -30,15 +31,15 @@ public class AuthenticationService : IAuthenticationService
         return newUser;
     }
 
-    public User? Login(string username, string password)
+    public UserDto? Login(string username, string password)
     {
-        var user = _userService.GetAll().FirstOrDefault(x => x.Username == username);
+        var user = _userService.GetUserByUserName(username);
         if (user == null)
             throw new Exception("User not found");
         if (user.Password != password)
             throw new Exception("username or password is incorrect");
         
-        if (!user.IsActive)
+        if (!user.Status)
             throw new Exception("User is inactive");
 
         return user;

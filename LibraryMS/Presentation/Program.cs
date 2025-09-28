@@ -7,6 +7,8 @@ using LibraryMS.Framework;
 using Sharprompt;
 using Spectre.Console;
 using System.Collections.Generic;
+using LibraryMS.Application_Service.DTOs;
+
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 
@@ -22,38 +24,38 @@ IWishListService wishListService = new WishListService();
 
 
 
-Console.WriteLine("نسخه 2.5.6 کتابخانه پشمک حاج عبدالاه".Reverse().ToArray());
+// Console.WriteLine("نسخه 2.5.6 کتابخانه پشمک حاج عبدالاه".Reverse().ToArray());
+//
+// await AnsiConsole.Progress()
+//     .Columns(new ProgressColumn[]
+//     {
+//         new TaskDescriptionColumn(),
+//         new ProgressBarColumn(),
+//         new PercentageColumn(),
+//         new SpinnerColumn()
+//     })
+//     .StartAsync(async ctx =>
+//     {
+//         var dbTask = ctx.AddTask("[red]Connecting to database[/]");
+//         var appTask = ctx.AddTask("[yellow]Loading application[/]");
+//         var uiTask = ctx.AddTask("[green]Building UI[/]");
+//
+//         while (!ctx.IsFinished)
+//         {
+//             await Task.Delay(150);
+//
+//             dbTask.Increment(2.5);
+//             appTask.Increment(2);
+//             uiTask.Increment(3.0);
+//         }
+//     });
+//
+// AnsiConsole.MarkupLine("[bold cyan]✔ Application started successfully![/]");
+// Console.ReadKey();
 
-await AnsiConsole.Progress()
-    .Columns(new ProgressColumn[]
-    {
-        new TaskDescriptionColumn(),
-        new ProgressBarColumn(),
-        new PercentageColumn(),
-        new SpinnerColumn()
-    })
-    .StartAsync(async ctx =>
-    {
-        var dbTask = ctx.AddTask("[red]Connecting to database[/]");
-        var appTask = ctx.AddTask("[yellow]Loading application[/]");
-        var uiTask = ctx.AddTask("[green]Building UI[/]");
-
-        while (!ctx.IsFinished)
-        {
-            await Task.Delay(150);
-
-            dbTask.Increment(2.5);
-            appTask.Increment(2);
-            uiTask.Increment(3.0);
-        }
-    });
-
-AnsiConsole.MarkupLine("[bold cyan]✔ Application started successfully![/]");
-Console.ReadKey();
 
 
-
-User? currentUser = null!;
+UserDto? currentUser = null!;
 AuthenticationMenu();
 
 
@@ -94,9 +96,9 @@ void AuthenticationMenu()
 
                         currentUser = authenticationService.Login(userName, password);
 
-                        if (currentUser != null && currentUser.UserRole == UserRoleEnum.Member)
+                        if (currentUser != null && currentUser.Roll == UserRoleEnum.Member)
                             MemberMenu();
-                        else
+                        else if (currentUser != null && currentUser.Roll == UserRoleEnum.Admin)
                             AdminMenu();
 
                         break;

@@ -1,4 +1,5 @@
-﻿using LibraryMS.Domain.Contracts.Repository_Contracts;
+﻿using LibraryMS.Application_Service.DTOs;
+using LibraryMS.Domain.Contracts.Repository_Contracts;
 using LibraryMS.Domain.Entities;
 using LibraryMS.Infrastructure.Persistence;
 
@@ -21,11 +22,25 @@ public class UserRepository : IUserRepository
         return appDbContext.Users.FirstOrDefault(x => x.Id == id);
     }
 
-    public User? GetByUserName(string userName)
+    public UserDto? GetByUserName(string userName)
     {
         using var appDbContext = new AppDbContext();
-        return appDbContext.Users.FirstOrDefault(x => x.Username == userName);
+
+        return appDbContext.Users
+            .Where(x => x.Username == userName) 
+            .Select(x => new UserDto()
+            {
+                Id = x.Id,
+                FullName = $"{x.FirstName} {x.LastName}",
+                Status = x.IsActive,
+                Password = x.Password,
+                Roll = x.UserRole,
+                Username = x.Username,
+                PenaltyAmount = x.PenaltyAmount
+            })
+            .FirstOrDefault(); 
     }
+
 
     public List<User> GetAll()
     {

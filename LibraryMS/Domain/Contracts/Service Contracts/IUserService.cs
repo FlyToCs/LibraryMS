@@ -10,6 +10,7 @@ public interface IUserService
     void Activate(int id);
     void Deactivate(int id);
     List<User> GetAll();
+    UserDto? GetUserByUserName(string userName);
     List<UserDto> GetAllActive();
     List<UserDto> GetAllInActive();
     List<UserDto> GetUserHasPenaltyAmount();

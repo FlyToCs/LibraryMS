@@ -51,6 +51,11 @@ public class UserService : IUserService
         return _userRepo.GetAll();
     }
 
+    public UserDto? GetUserByUserName(string userName)
+    {
+       return _userRepo.GetByUserName(userName);
+    }
+
     public List<UserDto> GetAllActive()
     {
         var user =  _userRepo.GetAllActive();
